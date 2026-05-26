@@ -28,7 +28,7 @@
     </DimensionLayout>
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="mainPanel" max="32767" attributes="0"/>
+          <Component id="mainPanel" alignment="0" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
   </Layout>
@@ -47,31 +47,21 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Component id="jSeparator1" alignment="0" max="32767" attributes="0"/>
               <Group type="102" attributes="0">
-                  <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                  <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" attributes="0">
-                          <Component id="periodLabel" min="-2" pref="40" max="-2" attributes="0"/>
                           <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
-                          <Component id="beforePeriodFTF" min="-2" pref="75" max="-2" attributes="0"/>
-                          <EmptySpace max="-2" attributes="0"/>
-                          <Component id="dashLabel" min="-2" pref="8" max="-2" attributes="0"/>
-                          <EmptySpace min="-2" max="-2" attributes="0"/>
-                          <Component id="afterPeriodFTF" min="-2" pref="75" max="-2" attributes="0"/>
+                          <Component id="titleLabel" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="7" max="-2" attributes="0"/>
+                          <Component id="titleTF" min="-2" pref="166" max="-2" attributes="0"/>
                       </Group>
                       <Group type="102" alignment="0" attributes="0">
-                          <Component id="titleLabel" min="-2" pref="36" max="-2" attributes="0"/>
-                          <EmptySpace min="-2" pref="24" max="-2" attributes="0"/>
-                          <Component id="titleTF" max="32767" attributes="0"/>
+                          <EmptySpace min="-2" pref="50" max="-2" attributes="0"/>
+                          <Component id="createButton" min="-2" pref="60" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
+                          <Component id="cancelButton" min="-2" pref="60" max="-2" attributes="0"/>
                       </Group>
                   </Group>
                   <EmptySpace pref="24" max="32767" attributes="0"/>
-              </Group>
-              <Group type="102" alignment="0" attributes="0">
-                  <EmptySpace min="-2" pref="60" max="-2" attributes="0"/>
-                  <Component id="createButton" min="-2" pref="60" max="-2" attributes="0"/>
-                  <EmptySpace max="32767" attributes="0"/>
-                  <Component id="cancelButton" min="-2" pref="55" max="-2" attributes="0"/>
-                  <EmptySpace min="-2" pref="60" max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -83,21 +73,14 @@
                       <Component id="titleLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="titleTF" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace min="-2" pref="19" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
+                  <Component id="jSeparator1" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="periodLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="afterPeriodFTF" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="beforePeriodFTF" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="dashLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                  </Group>
-                  <EmptySpace type="separate" max="-2" attributes="0"/>
-                  <Component id="jSeparator1" min="-2" pref="10" max="-2" attributes="0"/>
-                  <EmptySpace min="-2" pref="4" max="-2" attributes="0"/>
-                  <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="cancelButton" alignment="3" min="-2" pref="20" max="-2" attributes="0"/>
                       <Component id="createButton" alignment="3" min="-2" pref="20" max="-2" attributes="0"/>
+                      <Component id="cancelButton" alignment="3" min="-2" pref="20" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace pref="13" max="32767" attributes="0"/>
+                  <EmptySpace pref="15" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -105,12 +88,7 @@
       <SubComponents>
         <Component class="javax.swing.JLabel" name="titleLabel">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Title:   "/>
-          </Properties>
-        </Component>
-        <Component class="javax.swing.JLabel" name="periodLabel">
-          <Properties>
-            <Property name="text" type="java.lang.String" value="Period:"/>
+            <Property name="text" type="java.lang.String" value="Label:"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="cancelButton">
@@ -151,30 +129,6 @@
           </Events>
         </Component>
         <Component class="javax.swing.JSeparator" name="jSeparator1">
-        </Component>
-        <Component class="javax.swing.JFormattedTextField" name="afterPeriodFTF">
-          <Properties>
-            <Property name="horizontalAlignment" type="int" value="0"/>
-            <Property name="text" type="java.lang.String" value="__/__/____"/>
-          </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="afterPeriodFTFActionPerformed"/>
-          </Events>
-        </Component>
-        <Component class="javax.swing.JFormattedTextField" name="beforePeriodFTF">
-          <Properties>
-            <Property name="horizontalAlignment" type="int" value="0"/>
-            <Property name="text" type="java.lang.String" value="__/__/____"/>
-          </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="beforePeriodFTFActionPerformed"/>
-          </Events>
-        </Component>
-        <Component class="javax.swing.JLabel" name="dashLabel">
-          <Properties>
-            <Property name="horizontalAlignment" type="int" value="0"/>
-            <Property name="text" type="java.lang.String" value="-"/>
-          </Properties>
         </Component>
       </SubComponents>
     </Container>

@@ -154,6 +154,9 @@ public class OptionsMenu extends javax.swing.JFrame {
         viewModulesButton.setText("VIEW MODULES");
         viewModulesButton.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         viewModulesButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                viewModulesButtonMouseClicked(evt);
+            }
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 viewModulesButtonMouseEntered(evt);
             }
@@ -254,7 +257,7 @@ public class OptionsMenu extends javax.swing.JFrame {
 
     private void createModelButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createModelButtonMouseClicked
         // TODO add your handling code here:
-        newModulePop secondWindow = new newModulePop();
+        newModulePop secondWindow = new newModulePop(this);
         secondWindow.setVisible(true);
     }//GEN-LAST:event_createModelButtonMouseClicked
 
@@ -271,6 +274,12 @@ public class OptionsMenu extends javax.swing.JFrame {
         viewModulesButton.setForeground(Color.black); 
         viewModulesButton.setBorder(BorderFactory.createLineBorder(Color.black));
     }//GEN-LAST:event_viewModulesButtonMouseExited
+
+    private void viewModulesButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_viewModulesButtonMouseClicked
+        // TODO add your handling code here:
+        selectModule secondWindow = new selectModule(this);
+        secondWindow.setVisible(true);
+    }//GEN-LAST:event_viewModulesButtonMouseClicked
 
     private void showStatsDialog() {
         JDialog statsDialog = new JDialog(this, "Game Stats", true);
