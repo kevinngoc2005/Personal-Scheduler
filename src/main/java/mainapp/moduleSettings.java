@@ -79,9 +79,10 @@ public class moduleSettings extends javax.swing.JFrame {
 
                 try {
                     ModuleStorage.saveModule(new ModuleStorage.Module(title, startDate, endDate, "0"));
-                    javax.swing.JOptionPane.showMessageDialog(null, "Module \"" + title + "\" created successfully!");
-                    dispose();
-                    setVisible(true); 
+                    javax.swing.JOptionPane.showMessageDialog(null, "Module \"" + title + "\" created successfully!");                    
+                    moduleSettings secondWindow = new moduleSettings(); 
+                    secondWindow.setVisible(true); 
+                    dispose(); 
                 } catch (Exception ex) {
                     javax.swing.JOptionPane.showMessageDialog(null, "Failed to save module: " + ex.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
                 }
