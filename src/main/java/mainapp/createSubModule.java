@@ -19,26 +19,24 @@ import javax.swing.BorderFactory;
  *
  * @author trank
  */
-public class newModulePop extends javax.swing.JFrame {
+public class createSubModule extends javax.swing.JFrame {
 
     /**
      * Creates new form newModulePop
      */
     private java.awt.Window caller;
 
-    public newModulePop() {
+    public createSubModule() {
         setUndecorated(true);
         initComponents();
-        setupDateFields();
         setLocationRelativeTo(null);
     }
 
-    public newModulePop(java.awt.Window caller) {
+    public createSubModule(java.awt.Window caller) {
         this.caller = caller;
         caller.setEnabled(false);
         setUndecorated(true);
         initComponents();
-        setupDateFields();
         setLocationRelativeTo(null);
     }
 
@@ -48,56 +46,7 @@ public class newModulePop extends javax.swing.JFrame {
         super.dispose();
     }
 
-    private void setupDateFields() {
-        try {
-            MaskFormatter mask1 = new MaskFormatter("##/##/####");
-            mask1.setPlaceholderCharacter('_');
-            MaskFormatter mask2 = new MaskFormatter("##/##/####");
-            mask2.setPlaceholderCharacter('_');
-
-            afterPeriodFTF.setFormatterFactory(new DefaultFormatterFactory(mask1));
-            beforePeriodFTF.setFormatterFactory(new DefaultFormatterFactory(mask2));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        createButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                String title = titleTF.getText().trim();
-                String startDate = beforePeriodFTF.getText().trim();
-                String endDate = afterPeriodFTF.getText().trim();
-
-                if (title.isEmpty()) {
-                    javax.swing.JOptionPane.showMessageDialog(null, "Title cannot be empty.");
-                    return;
-                }
-                if (!isDateValid(beforePeriodFTF) || !isDateValid(afterPeriodFTF)) {
-                    javax.swing.JOptionPane.showMessageDialog(null, "Dates must be valid and not before today.");
-                    return;
-                }
-
-                try {
-                    ModuleStorage.saveModule(new ModuleStorage.Module(title, startDate, endDate, "0"));
-                    javax.swing.JOptionPane.showMessageDialog(null, "Module \"" + title + "\" created successfully!");
-                    dispose();
-                } catch (Exception ex) {
-                    javax.swing.JOptionPane.showMessageDialog(null, "Failed to save module: " + ex.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        });
-    }
-
-    private boolean isDateValid(javax.swing.JFormattedTextField field) {
-        String text = field.getText().replace("_", "").trim();
-        try {
-            DateTimeFormatter fmt = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-            LocalDate entered = LocalDate.parse(text, fmt);
-            return !entered.isBefore(LocalDate.now());
-        } catch (Exception e) {
-            return false;
-        }
-    }
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -110,22 +59,16 @@ public class newModulePop extends javax.swing.JFrame {
 
         mainPanel = new javax.swing.JPanel();
         titleLabel = new javax.swing.JLabel();
-        periodLabel = new javax.swing.JLabel();
         cancelButton = new javax.swing.JLabel();
         createButton = new javax.swing.JLabel();
         titleTF = new javax.swing.JTextField();
         jSeparator1 = new javax.swing.JSeparator();
-        afterPeriodFTF = new javax.swing.JFormattedTextField();
-        beforePeriodFTF = new javax.swing.JFormattedTextField();
-        dashLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         mainPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
-        titleLabel.setText("Title:   ");
-
-        periodLabel.setText("Period:");
+        titleLabel.setText("Label:");
 
         cancelButton.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         cancelButton.setText("Cancel");
@@ -163,52 +106,24 @@ public class newModulePop extends javax.swing.JFrame {
             }
         });
 
-        afterPeriodFTF.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        afterPeriodFTF.setText("__/__/____");
-        afterPeriodFTF.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                afterPeriodFTFActionPerformed(evt);
-            }
-        });
-
-        beforePeriodFTF.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        beforePeriodFTF.setText("__/__/____");
-        beforePeriodFTF.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                beforePeriodFTFActionPerformed(evt);
-            }
-        });
-
-        dashLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        dashLabel.setText("-");
-
         javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
         mainPanel.setLayout(mainPanelLayout);
         mainPanelLayout.setHorizontalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jSeparator1)
             .addGroup(mainPanelLayout.createSequentialGroup()
-                .addGap(30, 30, 30)
-                .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(mainPanelLayout.createSequentialGroup()
-                        .addComponent(periodLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(20, 20, 20)
-                        .addComponent(beforePeriodFTF, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(dashLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 8, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(afterPeriodFTF, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, mainPanelLayout.createSequentialGroup()
-                        .addComponent(titleLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(24, 24, 24)
-                        .addComponent(titleTF)))
+                        .addComponent(titleLabel)
+                        .addGap(7, 7, 7)
+                        .addComponent(titleTF, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(mainPanelLayout.createSequentialGroup()
+                        .addGap(50, 50, 50)
+                        .addComponent(createButton, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(30, 30, 30)
+                        .addComponent(cancelButton, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(24, Short.MAX_VALUE))
-            .addGroup(mainPanelLayout.createSequentialGroup()
-                .addGap(60, 60, 60)
-                .addComponent(createButton, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(cancelButton, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(60, 60, 60))
         );
         mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -217,19 +132,13 @@ public class newModulePop extends javax.swing.JFrame {
                 .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(titleLabel)
                     .addComponent(titleTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(19, 19, 19)
-                .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(periodLabel)
-                    .addComponent(afterPeriodFTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(beforePeriodFTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(dashLabel))
                 .addGap(18, 18, 18)
-                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(4, 4, 4)
+                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(12, 12, 12)
                 .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(cancelButton, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(createButton, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(13, Short.MAX_VALUE))
+                    .addComponent(createButton, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cancelButton, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(15, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -250,41 +159,33 @@ public class newModulePop extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_titleTFActionPerformed
 
-    private void afterPeriodFTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_afterPeriodFTFActionPerformed
+    private void createButtonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createButtonMouseExited
         // TODO add your handling code here:
-    }//GEN-LAST:event_afterPeriodFTFActionPerformed
-
-    private void beforePeriodFTFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_beforePeriodFTFActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_beforePeriodFTFActionPerformed
+        createButton.setBackground(new Color(153,153,153));
+        createButton.setForeground(Color.black);
+        createButton.setBorder(BorderFactory.createLineBorder(Color.black));
+    }//GEN-LAST:event_createButtonMouseExited
 
     private void createButtonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createButtonMouseEntered
         // TODO add your handling code here:
         createButton.setBackground(Color.white);
-        createButton.setForeground(Color.white); 
+        createButton.setForeground(Color.white);
         createButton.setBorder(BorderFactory.createLineBorder(Color.WHITE));
     }//GEN-LAST:event_createButtonMouseEntered
-
-    private void createButtonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createButtonMouseExited
-        // TODO add your handling code here:
-        createButton.setBackground(new Color(153,153,153));
-        createButton.setForeground(Color.black); 
-        createButton.setBorder(BorderFactory.createLineBorder(Color.black));
-    }//GEN-LAST:event_createButtonMouseExited
-
-    private void cancelButtonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cancelButtonMouseEntered
-        // TODO add your handling code here:
-        cancelButton.setBackground(Color.white);
-        cancelButton.setForeground(Color.white); 
-        cancelButton.setBorder(BorderFactory.createLineBorder(Color.WHITE));
-    }//GEN-LAST:event_cancelButtonMouseEntered
 
     private void cancelButtonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cancelButtonMouseExited
         // TODO add your handling code here:
         cancelButton.setBackground(new Color(153,153,153));
-        cancelButton.setForeground(Color.black); 
+        cancelButton.setForeground(Color.black);
         cancelButton.setBorder(BorderFactory.createLineBorder(Color.black));
     }//GEN-LAST:event_cancelButtonMouseExited
+
+    private void cancelButtonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cancelButtonMouseEntered
+        // TODO add your handling code here:
+        cancelButton.setBackground(Color.white);
+        cancelButton.setForeground(Color.white);
+        cancelButton.setBorder(BorderFactory.createLineBorder(Color.WHITE));
+    }//GEN-LAST:event_cancelButtonMouseEntered
 
     private void cancelButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cancelButtonMouseClicked
         // TODO add your handling code here:
@@ -292,11 +193,18 @@ public class newModulePop extends javax.swing.JFrame {
     }//GEN-LAST:event_cancelButtonMouseClicked
 
     private void createButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createButtonMouseClicked
-        // TODO add your handling code here:
+        // logic code goes here
+        String title = titleTF.getText().trim();
         
-        // actual logic here
+        if (title.isEmpty()) {
+            javax.swing.JOptionPane.showMessageDialog(null, "Title cannot be empty.");
+            return;
+        }
         
-        
+        // Dispose both parent and child windows, then reopen parents window (to update it) 
+        this.dispose(); 
+        caller.dispose(); 
+        caller.setVisible(true); 
         
     }//GEN-LAST:event_createButtonMouseClicked
 
@@ -317,33 +225,32 @@ public class newModulePop extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(newModulePop.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(createSubModule.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(newModulePop.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(createSubModule.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(newModulePop.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(createSubModule.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(newModulePop.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(createSubModule.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new newModulePop().setVisible(true);
+                new createSubModule().setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JFormattedTextField afterPeriodFTF;
-    private javax.swing.JFormattedTextField beforePeriodFTF;
     private javax.swing.JLabel cancelButton;
     private javax.swing.JLabel createButton;
-    private javax.swing.JLabel dashLabel;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JPanel mainPanel;
-    private javax.swing.JLabel periodLabel;
     private javax.swing.JLabel titleLabel;
     private javax.swing.JTextField titleTF;
     // End of variables declaration//GEN-END:variables

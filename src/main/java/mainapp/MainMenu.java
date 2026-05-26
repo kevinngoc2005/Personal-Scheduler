@@ -374,6 +374,13 @@ public class MainMenu extends javax.swing.JFrame {
         }
         //</editor-fold>
 
+        String url = "jdbc:sqlite:schedule.db";
+        try (java.sql.Connection conn = java.sql.DriverManager.getConnection(url)) {
+            System.out.println("Connected. Database file is ready.");
+        } catch (java.sql.SQLException e) {
+            e.printStackTrace();
+        }
+        
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
