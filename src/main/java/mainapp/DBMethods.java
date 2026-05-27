@@ -111,9 +111,9 @@ public class DBMethods {
 
     // Deletes a module by id. Because foreign keys + ON DELETE CASCADE are enabled,
     // this also automatically deletes all its sub-modules, tasks, and subtasks.
-    public static void deleteModule(int moduleId) throws SQLException {
-        try (PreparedStatement ps = getConnection().prepareStatement("DELETE FROM MODULES WHERE id = ?")) {
-            ps.setInt(1, moduleId);
+    public static void deleteModule(String modName) throws SQLException {
+        try (PreparedStatement ps = getConnection().prepareStatement("DELETE FROM MODULES WHERE name = ?")) {
+            ps.setString(1, modName);
             ps.executeUpdate();
         }
     }
@@ -136,6 +136,29 @@ public class DBMethods {
             ps.setInt(1, moduleId);
             ResultSet rs = ps.executeQuery();
             return rs.next() ? rs.getString("name") : null;
+        }
+    }
+
+    // Gets the start [0] and end [1] date for modules
+    public static String[] getTimePeriodByName(String name) throws SQLException {
+        String sql = "SELECT start_date, end_date FROM MODULES WHERE name = ? LIMIT 1";
+        try (PreparedStatement ps = getConnection().prepareStatement(sql)) {
+            ps.setString(1, name);
+            ResultSet rs = ps.executeQuery();
+            return rs.next() ? new String[]{rs.getString("start_date"), rs.getString("end_date")} : null;
+        }
+    }
+
+    // Updates the name and date range of an existing module. oName -> original module name
+    // Updates a module matched by its original name. The id is never touched.
+    public static void updateModule(String oName, String name, String startDate, String endDate) throws SQLException {
+        String sql = "UPDATE MODULES SET name = ?, start_date = ?, end_date = ? WHERE name = ?";
+        try (PreparedStatement ps = getConnection().prepareStatement(sql)) {
+            ps.setString(1, name);
+            ps.setString(2, startDate);
+            ps.setString(3, endDate);
+            ps.setString(4, oName);
+            ps.executeUpdate();
         }
     }
 

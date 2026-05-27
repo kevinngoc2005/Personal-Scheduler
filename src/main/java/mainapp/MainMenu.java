@@ -159,7 +159,7 @@ public class MainMenu extends javax.swing.JFrame {
         settingButton.setFont(new java.awt.Font("SansSerif", 0, 11)); // NOI18N
         settingButton.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         settingButton.setText("SETTINGS");
-        settingButton.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        settingButton.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0), 2));
         settingButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 settingButtonMouseEntered(evt);

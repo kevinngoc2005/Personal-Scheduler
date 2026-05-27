@@ -25,6 +25,7 @@ public class moduleSettings extends javax.swing.JFrame {
      * Creates new form newModulePop
      */
     private java.awt.Window caller;
+    private String moduleName;
 
     public moduleSettings() {
         setUndecorated(true);
@@ -40,8 +41,9 @@ public class moduleSettings extends javax.swing.JFrame {
         });
     }
 
-    public moduleSettings(java.awt.Window caller) {
+    public moduleSettings(java.awt.Window caller, String modName) {
         this.caller = caller;
+        moduleName = modName;
         caller.setEnabled(false);
         setUndecorated(true);
         initComponents();
@@ -54,6 +56,14 @@ public class moduleSettings extends javax.swing.JFrame {
                 requestFocus();
             }
         });
+        try{
+            String[] timePeriod = DBMethods.getTimePeriodByName(moduleName);
+            beforePeriodFTF.setText(timePeriod[0]);
+            afterPeriodFTF.setText(timePeriod[1]);
+            titleTF.setText(moduleName);
+        } catch(Exception ex) {
+            javax.swing.JOptionPane.showMessageDialog(null, "Failed to save retrieve time period: " + ex.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     @Override
@@ -81,6 +91,7 @@ public class moduleSettings extends javax.swing.JFrame {
                 String title = titleTF.getText().trim();
                 String startDate = beforePeriodFTF.getText().trim();
                 String endDate = afterPeriodFTF.getText().trim();
+        
 
                 if (title.isEmpty()) {
                     javax.swing.JOptionPane.showMessageDialog(null, "Title cannot be empty.");
@@ -90,14 +101,19 @@ public class moduleSettings extends javax.swing.JFrame {
                     javax.swing.JOptionPane.showMessageDialog(null, "Dates must be valid and not before today.");
                     return;
                 }
+                if (!isStartBeforeEnd(beforePeriodFTF, afterPeriodFTF)) {
+                    javax.swing.JOptionPane.showMessageDialog(null, "Start date must be before end date.");
+                    return;
+                }
 
                 try {
-                    javax.swing.JOptionPane.showMessageDialog(null, "Module \"" + title + "\" created successfully!");                    
-                    moduleSettings secondWindow = new moduleSettings(); 
+                    DBMethods.updateModule(moduleName, title, startDate, endDate);
+                    javax.swing.JOptionPane.showMessageDialog(null, "Module \"" + title + "\" updated successfully!");                    
+                    viewModule secondWindow = new viewModule(moduleName); 
                     secondWindow.setVisible(true); 
                     dispose(); 
                 } catch (Exception ex) {
-                    javax.swing.JOptionPane.showMessageDialog(null, "Failed to save module: " + ex.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+                    javax.swing.JOptionPane.showMessageDialog(null, "Failed to update module: " + ex.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -109,6 +125,17 @@ public class moduleSettings extends javax.swing.JFrame {
             DateTimeFormatter fmt = DateTimeFormatter.ofPattern("MM/dd/yyyy");
             LocalDate entered = LocalDate.parse(text, fmt);
             return !entered.isBefore(LocalDate.now());
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private boolean isStartBeforeEnd(javax.swing.JFormattedTextField startField, javax.swing.JFormattedTextField endField) {
+        try {
+            DateTimeFormatter fmt = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+            LocalDate start = LocalDate.parse(startField.getText().replace("_", "").trim(), fmt);
+            LocalDate end = LocalDate.parse(endField.getText().replace("_", "").trim(), fmt);
+            return start.isBefore(end);
         } catch (Exception e) {
             return false;
         }
@@ -246,46 +273,47 @@ public class moduleSettings extends javax.swing.JFrame {
             .addComponent(jSeparator1, javax.swing.GroupLayout.DEFAULT_SIZE, 358, Short.MAX_VALUE)
             .addComponent(jSeparator2)
             .addGroup(mainPanelLayout.createSequentialGroup()
-                .addGap(70, 70, 70)
-                .addComponent(subModNameLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(subModNameTF, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(72, 72, 72))
-            .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(mainPanelLayout.createSequentialGroup()
-                    .addGap(32, 32, 32)
-                    .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(mainPanelLayout.createSequentialGroup()
-                            .addGap(36, 36, 36)
-                            .addComponent(titleLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(titleTF, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
-                            .addComponent(periodLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addComponent(beforePeriodFTF, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(dashLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 8, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(afterPeriodFTF, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGroup(mainPanelLayout.createSequentialGroup()
-                    .addGap(25, 25, 25)
-                    .addComponent(updateButton, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(15, 15, 15)
-                    .addComponent(createButton, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGap(15, 15, 15)
-                    .addComponent(returnButton, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGroup(mainPanelLayout.createSequentialGroup()
-                    .addGap(135, 135, 135)
-                    .addComponent(moduleLabel))
-                .addGroup(mainPanelLayout.createSequentialGroup()
-                    .addGap(120, 120, 120)
-                    .addComponent(subModuleLabel))
-                .addGroup(mainPanelLayout.createSequentialGroup()
-                    .addGap(55, 55, 55)
-                    .addComponent(sTitleLabel)
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                    .addComponent(subModCB, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(mainPanelLayout.createSequentialGroup()
+                        .addGap(70, 70, 70)
+                        .addComponent(subModNameLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(subModNameTF, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(mainPanelLayout.createSequentialGroup()
+                        .addGap(32, 32, 32)
+                        .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(mainPanelLayout.createSequentialGroup()
+                                .addGap(36, 36, 36)
+                                .addComponent(titleLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(titleTF, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
+                                .addComponent(periodLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(beforePeriodFTF, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(dashLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 8, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(afterPeriodFTF, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addGroup(mainPanelLayout.createSequentialGroup()
+                        .addGap(25, 25, 25)
+                        .addComponent(updateButton, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(15, 15, 15)
+                        .addComponent(createButton, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(15, 15, 15)
+                        .addComponent(returnButton, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(mainPanelLayout.createSequentialGroup()
+                        .addGap(135, 135, 135)
+                        .addComponent(moduleLabel))
+                    .addGroup(mainPanelLayout.createSequentialGroup()
+                        .addGap(120, 120, 120)
+                        .addComponent(subModuleLabel))
+                    .addGroup(mainPanelLayout.createSequentialGroup()
+                        .addGap(55, 55, 55)
+                        .addComponent(sTitleLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(subModCB, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
         );
         mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -374,7 +402,7 @@ public class moduleSettings extends javax.swing.JFrame {
 
     private void returnButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_returnButtonMouseClicked
         // TODO add your handling code here:
-        viewModule secondWindow = new viewModule(); 
+        viewModule secondWindow = new viewModule(moduleName); 
         secondWindow.setVisible(true); 
         super.dispose();
     }//GEN-LAST:event_returnButtonMouseClicked

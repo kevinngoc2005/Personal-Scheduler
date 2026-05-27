@@ -238,6 +238,22 @@ public class selectModule extends javax.swing.JFrame {
 
     private void deleteButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_deleteButtonMouseClicked
         // TODO add your handling code here:
+        String selected = (String) selectSmodCB.getSelectedItem();
+        
+        if(selected != null && !selected.isBlank()){
+            try{
+                DBMethods.deleteModule(selected);
+                javax.swing.JOptionPane.showMessageDialog(null, "Module \"" + selected + "\" deleted successfully!");  
+            } catch(Exception ex) {
+                javax.swing.JOptionPane.showMessageDialog(null, "Failed to delete module: " + ex.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            }
+          
+            selectModule secondWindow = new selectModule(caller);
+            secondWindow.setVisible(true);
+            this.dispose();
+        } else{
+            javax.swing.JOptionPane.showMessageDialog(null, "Please choose a module.");
+        }
         
     }//GEN-LAST:event_deleteButtonMouseClicked
 
@@ -261,10 +277,17 @@ public class selectModule extends javax.swing.JFrame {
 
     private void viewButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_viewButtonMouseClicked
         // TODO add your handling code here:
-        viewModule secondWindow = new viewModule();
-        secondWindow.setVisible(true);
-        caller.dispose(); 
-        this.dispose();
+        String selected = (String) selectSmodCB.getSelectedItem();
+        
+        
+        if(selected != null && !selected.isBlank()){
+            viewModule secondWindow = new viewModule(selected);
+            secondWindow.setVisible(true);
+            caller.dispose(); 
+            this.dispose();
+        } else{
+            javax.swing.JOptionPane.showMessageDialog(null, "Please choose a module.");
+        }
     }//GEN-LAST:event_viewButtonMouseClicked
 
     /**

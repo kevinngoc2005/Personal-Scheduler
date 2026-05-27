@@ -19,14 +19,14 @@ import javax.swing.BorderFactory;
  *
  * @author trank
  */
-public class newModulePop extends javax.swing.JFrame {
+public class createModule extends javax.swing.JFrame {
 
     /**
      * Creates new form newModulePop
      */
     private java.awt.Window caller;
 
-    public newModulePop() {
+    public createModule() {
         setUndecorated(true);
         initComponents();
         setupDateFields();
@@ -40,7 +40,7 @@ public class newModulePop extends javax.swing.JFrame {
         });
     }
 
-    public newModulePop(java.awt.Window caller) {
+    public createModule(java.awt.Window caller) {
         this.caller = caller;
         caller.setEnabled(false);
         setUndecorated(true);
@@ -90,6 +90,10 @@ public class newModulePop extends javax.swing.JFrame {
                     javax.swing.JOptionPane.showMessageDialog(null, "Dates must be valid and not before today.");
                     return;
                 }
+                if (!isStartBeforeEnd(beforePeriodFTF, afterPeriodFTF)) {
+                    javax.swing.JOptionPane.showMessageDialog(null, "Start date must be before end date.");
+                    return;
+                }
 
                 try {
                     int newID = DBMethods.addModule(name, startDate, endDate);
@@ -108,6 +112,17 @@ public class newModulePop extends javax.swing.JFrame {
             DateTimeFormatter fmt = DateTimeFormatter.ofPattern("MM/dd/yyyy");
             LocalDate entered = LocalDate.parse(text, fmt);
             return !entered.isBefore(LocalDate.now());
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private boolean isStartBeforeEnd(javax.swing.JFormattedTextField startField, javax.swing.JFormattedTextField endField) {
+        try {
+            DateTimeFormatter fmt = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+            LocalDate start = LocalDate.parse(startField.getText().replace("_", "").trim(), fmt);
+            LocalDate end = LocalDate.parse(endField.getText().replace("_", "").trim(), fmt);
+            return start.isBefore(end);
         } catch (Exception e) {
             return false;
         }
@@ -331,20 +346,21 @@ public class newModulePop extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(newModulePop.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(createModule.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(newModulePop.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(createModule.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(newModulePop.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(createModule.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(newModulePop.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(createModule.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new newModulePop().setVisible(true);
+                new createModule().setVisible(true);
             }
         });
     }

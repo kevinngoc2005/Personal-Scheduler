@@ -17,6 +17,10 @@ public class viewModule extends javax.swing.JFrame {
     /**
      * Creates new form viewModule
      */
+    
+    private String moduleName;
+    private int moduleID;
+    
     public viewModule() {
         setUndecorated(true);
         initComponents();
@@ -28,6 +32,30 @@ public class viewModule extends javax.swing.JFrame {
                 requestFocus();
             }
         });
+    }
+    
+    public viewModule(String modName) {
+        moduleName = modName; 
+           
+        setUndecorated(true);
+        initComponents();
+        setLocationRelativeTo(null);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowOpened(java.awt.event.WindowEvent e) {
+                toFront();
+                requestFocus();
+            }
+        });
+        
+        try{
+            moduleID = DBMethods.getModuleIdByName(modName);
+        } catch (Exception ex) {
+            javax.swing.JOptionPane.showMessageDialog(null, "Failed to get module ID: " + ex.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+        
+        changeModButton.setText(moduleName); 
+             
     }
 
     /**
@@ -87,7 +115,6 @@ public class viewModule extends javax.swing.JFrame {
 
         changeModButton.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         changeModButton.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        changeModButton.setText("Current Mod");
         changeModButton.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         changeModButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -206,7 +233,7 @@ public class viewModule extends javax.swing.JFrame {
 
     private void changeModButtonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_changeModButtonMouseExited
         // TODO add your handling code here:
-        changeModButton.setText("Current Mod");
+        changeModButton.setText(moduleName);
         changeModButton.setBackground(new Color(153,153,153));
         changeModButton.setForeground(Color.black);
         changeModButton.setBorder(BorderFactory.createLineBorder(Color.black));
@@ -241,7 +268,7 @@ public class viewModule extends javax.swing.JFrame {
 
     private void settingsButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_settingsButtonMouseClicked
         // TODO add your handling code here:
-        moduleSettings secondWindow = new moduleSettings(); 
+        moduleSettings secondWindow = new moduleSettings(this, moduleName); 
         secondWindow.setVisible(true); 
         this.dispose(); 
     }//GEN-LAST:event_settingsButtonMouseClicked

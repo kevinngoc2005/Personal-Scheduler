@@ -264,7 +264,7 @@ public class OptionsMenu extends javax.swing.JFrame {
 
     private void createModelButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createModelButtonMouseClicked
         // TODO add your handling code here:
-        newModulePop secondWindow = new newModulePop(this);
+        createModule secondWindow = new createModule(this);
         secondWindow.setVisible(true);
     }//GEN-LAST:event_createModelButtonMouseClicked
 
