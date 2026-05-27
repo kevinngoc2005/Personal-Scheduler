@@ -100,22 +100,11 @@ public class DBMethods {
         }
     }
 
-    // Returns all modules ordered by start date.
-    // ResultSet is a cursor — rs.next() advances it row by row until there are none left.
-    // Reuses ModuleStorage.Module as the data container to stay consistent with
-    // existing code (the 4th field stores the id as a string).
-    public static List<ModuleStorage.Module> getModules() throws SQLException {
-        List<ModuleStorage.Module> list = new ArrayList<>();
-        String sql = "SELECT * FROM MODULES ORDER BY start_date";
+    public static List<String> getModules() throws SQLException {
+        List<String> list = new ArrayList<>();
+        String sql = "SELECT name FROM MODULES ORDER BY start_date";
         try (ResultSet rs = getConnection().createStatement().executeQuery(sql)) {
-            while (rs.next()) {
-                list.add(new ModuleStorage.Module(
-                    rs.getString("name"),
-                    rs.getString("start_date"),
-                    rs.getString("end_date"),
-                    String.valueOf(rs.getInt("id"))
-                ));
-            }
+            while (rs.next()) list.add(rs.getString("name"));
         }
         return list;
     }
@@ -138,6 +127,15 @@ public class DBMethods {
             ps.setString(1, name);
             ResultSet rs = ps.executeQuery();
             return rs.next() ? rs.getInt("id") : -1;
+        }
+    }
+
+    public static String getModuleNameById(int moduleId) throws SQLException {
+        String sql = "SELECT name FROM MODULES WHERE id = ? LIMIT 1";
+        try (PreparedStatement ps = getConnection().prepareStatement(sql)) {
+            ps.setInt(1, moduleId);
+            ResultSet rs = ps.executeQuery();
+            return rs.next() ? rs.getString("name") : null;
         }
     }
 

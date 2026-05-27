@@ -31,6 +31,13 @@ public class moduleSettings extends javax.swing.JFrame {
         initComponents();
         setupDateFields();
         setLocationRelativeTo(null);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowOpened(java.awt.event.WindowEvent e) {
+                toFront();
+                requestFocus();
+            }
+        });
     }
 
     public moduleSettings(java.awt.Window caller) {
@@ -40,6 +47,13 @@ public class moduleSettings extends javax.swing.JFrame {
         initComponents();
         setupDateFields();
         setLocationRelativeTo(null);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowOpened(java.awt.event.WindowEvent e) {
+                toFront();
+                requestFocus();
+            }
+        });
     }
 
     @Override
@@ -78,7 +92,6 @@ public class moduleSettings extends javax.swing.JFrame {
                 }
 
                 try {
-                    ModuleStorage.saveModule(new ModuleStorage.Module(title, startDate, endDate, "0"));
                     javax.swing.JOptionPane.showMessageDialog(null, "Module \"" + title + "\" created successfully!");                    
                     moduleSettings secondWindow = new moduleSettings(); 
                     secondWindow.setVisible(true); 

@@ -28,6 +28,13 @@ public class OptionsMenu extends javax.swing.JFrame {
         setUndecorated(true);  // Remove title bar
         initComponents();
         setLocationRelativeTo(null);  // Center on screen
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowOpened(java.awt.event.WindowEvent e) {
+                toFront();
+                requestFocus();
+            }
+        });
     }
 
     /**

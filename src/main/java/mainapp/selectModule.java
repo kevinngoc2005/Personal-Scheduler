@@ -14,7 +14,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.Color;
 import javax.swing.BorderFactory;
-
+import java.util.List;
 /**
  *
  * @author trank
@@ -30,6 +30,14 @@ public class selectModule extends javax.swing.JFrame {
         setUndecorated(true);
         initComponents();
         setLocationRelativeTo(null);
+        populateModulesCB();
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowOpened(java.awt.event.WindowEvent e) {
+                toFront();
+                requestFocus();
+            }
+        });
     }
 
     public selectModule(java.awt.Window caller) {
@@ -38,6 +46,14 @@ public class selectModule extends javax.swing.JFrame {
         setUndecorated(true);
         initComponents();
         setLocationRelativeTo(null);
+        populateModulesCB();
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowOpened(java.awt.event.WindowEvent e) {
+                toFront();
+                requestFocus();
+            }
+        });
     }
 
     @Override
@@ -45,6 +61,19 @@ public class selectModule extends javax.swing.JFrame {
         if (caller != null) caller.setEnabled(true);
         super.dispose();
     }
+    
+    
+    public void populateModulesCB(){
+        try {
+            List<String> modules = DBMethods.getModules();
+            for (String name : modules) {
+                selectSmodCB.addItem(name);
+            }
+        } catch (Exception ex) {
+            javax.swing.JOptionPane.showMessageDialog(null, "Failed to load modules: " + ex.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
 
     
     /**
@@ -101,7 +130,7 @@ public class selectModule extends javax.swing.JFrame {
             }
         });
 
-        selectSmodCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        selectSmodCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " " }));
         selectSmodCB.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 selectSmodCBActionPerformed(evt);

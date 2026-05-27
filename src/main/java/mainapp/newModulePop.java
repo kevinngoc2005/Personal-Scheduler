@@ -31,6 +31,13 @@ public class newModulePop extends javax.swing.JFrame {
         initComponents();
         setupDateFields();
         setLocationRelativeTo(null);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowOpened(java.awt.event.WindowEvent e) {
+                toFront();
+                requestFocus();
+            }
+        });
     }
 
     public newModulePop(java.awt.Window caller) {
@@ -40,6 +47,13 @@ public class newModulePop extends javax.swing.JFrame {
         initComponents();
         setupDateFields();
         setLocationRelativeTo(null);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowOpened(java.awt.event.WindowEvent e) {
+                toFront();
+                requestFocus();
+            }
+        });
     }
 
     @Override
@@ -64,11 +78,11 @@ public class newModulePop extends javax.swing.JFrame {
         createButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                String title = titleTF.getText().trim();
+                String name = titleTF.getText().trim();
                 String startDate = beforePeriodFTF.getText().trim();
                 String endDate = afterPeriodFTF.getText().trim();
 
-                if (title.isEmpty()) {
+                if (name.isEmpty()) {
                     javax.swing.JOptionPane.showMessageDialog(null, "Title cannot be empty.");
                     return;
                 }
@@ -78,8 +92,8 @@ public class newModulePop extends javax.swing.JFrame {
                 }
 
                 try {
-                    ModuleStorage.saveModule(new ModuleStorage.Module(title, startDate, endDate, "0"));
-                    javax.swing.JOptionPane.showMessageDialog(null, "Module \"" + title + "\" created successfully!");
+                    int newID = DBMethods.addModule(name, startDate, endDate);
+                    javax.swing.JOptionPane.showMessageDialog(null, "Module \"" + name + "\" created successfully!");
                     dispose();
                 } catch (Exception ex) {
                     javax.swing.JOptionPane.showMessageDialog(null, "Failed to save module: " + ex.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
