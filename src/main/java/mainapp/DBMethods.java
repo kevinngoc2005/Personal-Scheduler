@@ -188,6 +188,16 @@ public class DBMethods {
         return list;
     }
 
+    // Returns the label of a sub-module by its id. Used for display titles.
+    public static String getSubModuleLabelById(int subModuleId) throws SQLException {
+        String sql = "SELECT label FROM SUB_MODULES WHERE id = ? LIMIT 1";
+        try (PreparedStatement ps = getConnection().prepareStatement(sql)) {
+            ps.setInt(1, subModuleId);
+            ResultSet rs = ps.executeQuery();
+            return rs.next() ? rs.getString("label") : null;
+        }
+    }
+
     // Deletes a single sub-module. Cascades to its tasks and their subtasks.
     public static void deleteSubModule(int subModuleId) throws SQLException {
         try (PreparedStatement ps = getConnection().prepareStatement("DELETE FROM SUB_MODULES WHERE id = ?")) {
@@ -212,6 +222,139 @@ public class DBMethods {
         try (PreparedStatement ps = getConnection().prepareStatement(sql)) {
             ps.setString(1, name);
             ps.setInt(2, sModID);
+            ps.executeUpdate();
+        }
+    }
+
+    // Returns distinct sub-modules (as {id, label}) under a module that have at
+    // least one task due on the given date. Used to build the day view.
+    public static List<String[]> getSubModulesWithTasksOnDate(int moduleId, String date) throws SQLException {
+        List<String[]> list = new ArrayList<>();
+        String sql = """
+            SELECT DISTINCT sm.id, sm.label
+            FROM SUB_MODULES sm
+            JOIN TASKS t ON t.sub_module_id = sm.id
+            WHERE sm.module_id = ? AND t.due_date = ?
+            ORDER BY sm.id""";
+        try (PreparedStatement ps = getConnection().prepareStatement(sql)) {
+            ps.setInt(1, moduleId);
+            ps.setString(2, date);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) list.add(new String[]{String.valueOf(rs.getInt("id")), rs.getString("label")});
+        }
+        return list;
+    }
+
+    // Returns tasks ({id, description, status}) for a sub-module on a specific date.
+    public static List<String[]> getTasksOnDate(int subModuleId, String date) throws SQLException {
+        List<String[]> list = new ArrayList<>();
+        String sql = "SELECT id, description, status FROM TASKS WHERE sub_module_id = ? AND due_date = ?";
+        try (PreparedStatement ps = getConnection().prepareStatement(sql)) {
+            ps.setInt(1, subModuleId);
+            ps.setString(2, date);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next())
+                list.add(new String[]{String.valueOf(rs.getInt("id")), rs.getString("description"), rs.getString("status")});
+        }
+        return list;
+    }
+
+    // Returns all tasks ({id, description, status, sub_module_label}) for a module on a date.
+    // Used by the weekly view so each day column only needs one query instead of N+1.
+    public static List<String[]> getAllTasksOnDate(int moduleId, String date) throws SQLException {
+        List<String[]> list = new ArrayList<>();
+        String sql = """
+            SELECT t.id, t.description, t.status, sm.label
+            FROM TASKS t
+            JOIN SUB_MODULES sm ON t.sub_module_id = sm.id
+            WHERE sm.module_id = ? AND t.due_date = ?
+            ORDER BY sm.id, t.id""";
+        try (PreparedStatement ps = getConnection().prepareStatement(sql)) {
+            ps.setInt(1, moduleId);
+            ps.setString(2, date);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next())
+                list.add(new String[]{
+                    String.valueOf(rs.getInt("id")),
+                    rs.getString("description"),
+                    rs.getString("status"),
+                    rs.getString("label")
+                });
+        }
+        return list;
+    }
+
+    // Returns {due_date, sub_module_label} pairs for every task in the range.
+    // One query covers the whole month so the monthly panel doesn't need 31 separate calls.
+    public static List<String[]> getSubModuleLabelsInRange(int moduleId, String startDate, String endDate) throws SQLException {
+        List<String[]> list = new ArrayList<>();
+        String sql = """
+            SELECT DISTINCT t.due_date, sm.label
+            FROM TASKS t
+            JOIN SUB_MODULES sm ON t.sub_module_id = sm.id
+            WHERE sm.module_id = ? AND t.due_date >= ? AND t.due_date <= ?
+            ORDER BY t.due_date, sm.id""";
+        try (PreparedStatement ps = getConnection().prepareStatement(sql)) {
+            ps.setInt(1, moduleId);
+            ps.setString(2, startDate);
+            ps.setString(3, endDate);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next())
+                list.add(new String[]{rs.getString("due_date"), rs.getString("label")});
+        }
+        return list;
+    }
+
+    // Returns all distinct due_dates that have at least one task under the given module
+    // in the [startDate, endDate] range (inclusive). Used to mark days on the monthly calendar.
+    public static List<String> getTaskDatesForModule(int moduleId, String startDate, String endDate) throws SQLException {
+        List<String> list = new ArrayList<>();
+        String sql = """
+            SELECT DISTINCT t.due_date
+            FROM TASKS t
+            JOIN SUB_MODULES sm ON t.sub_module_id = sm.id
+            WHERE sm.module_id = ? AND t.due_date >= ? AND t.due_date <= ?
+            ORDER BY t.due_date""";
+        try (PreparedStatement ps = getConnection().prepareStatement(sql)) {
+            ps.setInt(1, moduleId);
+            ps.setString(2, startDate);
+            ps.setString(3, endDate);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) list.add(rs.getString("due_date"));
+        }
+        return list;
+    }
+
+    // Returns subtasks ({id, description, status}) for a task — includes status
+    // so the day view can render checkboxes correctly.
+    public static List<String[]> getSubtasks(int taskId) throws SQLException {
+        List<String[]> list = new ArrayList<>();
+        String sql = "SELECT id, description, status FROM SUBTASKS WHERE task_id = ?";
+        try (PreparedStatement ps = getConnection().prepareStatement(sql)) {
+            ps.setInt(1, taskId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next())
+                list.add(new String[]{String.valueOf(rs.getInt("id")), rs.getString("description"), rs.getString("status")});
+        }
+        return list;
+    }
+
+    // Updates the description text of a task.
+    public static void updateTaskDescription(int taskId, String description) throws SQLException {
+        String sql = "UPDATE TASKS SET description = ? WHERE id = ?";
+        try (PreparedStatement ps = getConnection().prepareStatement(sql)) {
+            ps.setString(1, description);
+            ps.setInt(2, taskId);
+            ps.executeUpdate();
+        }
+    }
+
+    // Updates the description text of a subtask.
+    public static void updateSubtaskDescription(int subtaskId, String description) throws SQLException {
+        String sql = "UPDATE SUBTASKS SET description = ? WHERE id = ?";
+        try (PreparedStatement ps = getConnection().prepareStatement(sql)) {
+            ps.setString(1, description);
+            ps.setInt(2, subtaskId);
             ps.executeUpdate();
         }
     }
@@ -296,6 +439,14 @@ public class DBMethods {
         try (PreparedStatement ps = getConnection().prepareStatement(sql)) {
             ps.setString(1, status);
             ps.setInt(2, subtaskId);
+            ps.executeUpdate();
+        }
+    }
+
+    // Deletes a single subtask by id.
+    public static void deleteSubtask(int subtaskId) throws SQLException {
+        try (PreparedStatement ps = getConnection().prepareStatement("DELETE FROM SUBTASKS WHERE id = ?")) {
+            ps.setInt(1, subtaskId);
             ps.executeUpdate();
         }
     }

@@ -7,26 +7,48 @@ import java.util.List;
 import javax.swing.*;
 import javax.swing.JTextArea;
 
-public class dailyViewPanels extends JPanel {
+public class dayModel extends javax.swing.JFrame {
 
     private int moduleId;
     private LocalDate currentDate;
     private JPanel contentPanel;
     private JLabel dateLabel;
-    private java.awt.Window owner;
+    private java.awt.Window caller;
+    private Runnable onClose;
 
     private static final DateTimeFormatter FMT = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
-    public dailyViewPanels(java.awt.Window owner, int moduleId) {
-        this.owner = owner;
+    public dayModel(java.awt.Window caller, int moduleId, String date) {
+        this(caller, moduleId, date, null);
+    }
+
+    public dayModel(java.awt.Window caller, int moduleId, String date, Runnable onClose) {
+        this.caller = caller;
         this.moduleId = moduleId;
-        this.currentDate = LocalDate.now();
-        setLayout(new BorderLayout());
-        buildChrome();
+        this.currentDate = LocalDate.parse(date, FMT);
+        this.onClose = onClose;
+        caller.setEnabled(false);
+        setUndecorated(true);
+        initComponents();
+        setLocationRelativeTo(null);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowOpened(java.awt.event.WindowEvent e) {
+                toFront();
+                requestFocus();
+            }
+        });
         loadDay();
     }
 
-    // Rebuilds the task list for currentDate. Call after navigating or adding tasks.
+    @Override
+    public void dispose() {
+        if (caller != null) caller.setEnabled(true);
+        super.dispose();
+        if (onClose != null) onClose.run();
+    }
+
+    // Clears and rebuilds the task list for the current date.
     public void loadDay() {
         dateLabel.setText(currentDate.format(FMT));
         contentPanel.removeAll();
@@ -41,7 +63,9 @@ public class dailyViewPanels extends JPanel {
             } else {
                 for (String[] sm : subModules) {
                     int subModId = Integer.parseInt(sm[0]);
-                    contentPanel.add(buildSubModuleHeader(sm[1], subModId));
+                    String label = sm[1];
+
+                    contentPanel.add(buildSubModuleHeader(label, subModId));
 
                     List<String[]> tasks = DBMethods.getTasksOnDate(subModId, currentDate.format(FMT));
                     for (String[] task : tasks) {
@@ -49,8 +73,9 @@ public class dailyViewPanels extends JPanel {
                         contentPanel.add(buildTaskRow(task));
 
                         List<String[]> subtasks = DBMethods.getSubtasks(taskId);
-                        for (String[] subtask : subtasks)
+                        for (String[] subtask : subtasks) {
                             contentPanel.add(buildSubtaskRow(subtask));
+                        }
                     }
                     contentPanel.add(Box.createVerticalStrut(8));
                 }
@@ -64,6 +89,7 @@ public class dailyViewPanels extends JPanel {
         contentPanel.repaint();
     }
 
+    // Sub-module header — left side opens subModuleView, right side is a delete button.
     private JPanel buildSubModuleHeader(String label, int subModId) {
         JPanel panel = new JPanel(new BorderLayout(8, 0));
         panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 32));
@@ -80,10 +106,10 @@ public class dailyViewPanels extends JPanel {
         delBtn.setForeground(new Color(255, 150, 150));
         delBtn.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override public void mouseClicked(java.awt.event.MouseEvent e) {
-                int choice = javax.swing.JOptionPane.showConfirmDialog(owner,
+                int choice = JOptionPane.showConfirmDialog(dayModel.this,
                     "Delete sub-module '" + label + "'?\nThis removes all its tasks and subtasks across all dates.",
-                    "Confirm Delete", javax.swing.JOptionPane.YES_NO_OPTION);
-                if (choice == javax.swing.JOptionPane.YES_OPTION) {
+                    "Confirm Delete", JOptionPane.YES_NO_OPTION);
+                if (choice == JOptionPane.YES_OPTION) {
                     try { DBMethods.deleteSubModule(subModId); }
                     catch (Exception ex) { ex.printStackTrace(); }
                     loadDay();
@@ -93,7 +119,7 @@ public class dailyViewPanels extends JPanel {
 
         java.awt.event.MouseAdapter openView = new java.awt.event.MouseAdapter() {
             @Override public void mouseClicked(java.awt.event.MouseEvent e) {
-                new subModuleView(owner, subModId, currentDate.format(FMT), () -> loadDay()).setVisible(true);
+                new subModuleView(dayModel.this, subModId, currentDate.format(FMT), () -> loadDay()).setVisible(true);
             }
         };
         panel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -229,10 +255,16 @@ public class dailyViewPanels extends JPanel {
         return ta;
     }
 
-    private void buildChrome() {
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        mainPanel = new javax.swing.JPanel();
+
         // ── Top bar ──────────────────────────────────────────────────────────
         JPanel topBar = new JPanel(new BorderLayout());
 
+        // Prev / date label / Next — centered in the top bar
         JPanel navPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
 
         JLabel prevButton = new JLabel("< Prev");
@@ -278,6 +310,7 @@ public class dailyViewPanels extends JPanel {
         navPanel.add(dateLabel);
         navPanel.add(nextButton);
 
+        // Add Task / Close on the right side
         JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
 
         JLabel addTaskButton = new JLabel("+ Task");
@@ -287,7 +320,7 @@ public class dailyViewPanels extends JPanel {
         addTaskButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         addTaskButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                new addTaskDialog(owner, moduleId, currentDate.format(FMT), () -> loadDay()).setVisible(true);
+                new addTaskDialog(dayModel.this, moduleId, currentDate.format(FMT), () -> loadDay()).setVisible(true);
             }
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 addTaskButton.setBorder(BorderFactory.createLineBorder(Color.WHITE));
@@ -299,8 +332,29 @@ public class dailyViewPanels extends JPanel {
             }
         });
 
-        actionPanel.add(addTaskButton);
+        JLabel closeButton = new JLabel("Close");
+        closeButton.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        closeButton.setPreferredSize(new Dimension(60, 30));
+        closeButton.setHorizontalAlignment(SwingConstants.CENTER);
+        closeButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        closeButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                dispose();
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                closeButton.setBorder(BorderFactory.createLineBorder(Color.WHITE));
+                closeButton.setForeground(Color.WHITE);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                closeButton.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+                closeButton.setForeground(Color.BLACK);
+            }
+        });
 
+        actionPanel.add(addTaskButton);
+        actionPanel.add(closeButton);
+
+        // Mirror the action panel's width on the left so navPanel (CENTER) is truly centered.
         JPanel navSpacer = new JPanel();
         navSpacer.setOpaque(false);
         navSpacer.setPreferredSize(new java.awt.Dimension(actionPanel.getPreferredSize().width, 1));
@@ -317,7 +371,29 @@ public class dailyViewPanels extends JPanel {
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 
-        add(topBar, BorderLayout.NORTH);
-        add(scrollPane, BorderLayout.CENTER);
-    }
+        mainPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        mainPanel.setLayout(new BorderLayout());
+        mainPanel.add(topBar, BorderLayout.NORTH);
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(mainPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 420, Short.MAX_VALUE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(mainPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 500, Short.MAX_VALUE)
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel mainPanel;
+    // End of variables declaration//GEN-END:variables
 }
