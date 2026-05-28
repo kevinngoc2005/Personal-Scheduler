@@ -242,7 +242,8 @@ public class selectModule extends javax.swing.JFrame {
         
         if(selected != null && !selected.isBlank()){
             try{
-                DBMethods.deleteModule(selected);
+                int moduleID = DBMethods.getModuleIdByName(selected);
+                DBMethods.deleteModule(moduleID);
                 javax.swing.JOptionPane.showMessageDialog(null, "Module \"" + selected + "\" deleted successfully!");  
             } catch(Exception ex) {
                 javax.swing.JOptionPane.showMessageDialog(null, "Failed to delete module: " + ex.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
@@ -279,12 +280,18 @@ public class selectModule extends javax.swing.JFrame {
         // TODO add your handling code here:
         String selected = (String) selectSmodCB.getSelectedItem();
         
-        
         if(selected != null && !selected.isBlank()){
-            viewModule secondWindow = new viewModule(selected);
-            secondWindow.setVisible(true);
-            caller.dispose(); 
-            this.dispose();
+            
+            try{
+                int moduleID = DBMethods.getModuleIdByName(selected); 
+                viewModule secondWindow = new viewModule(moduleID);
+                secondWindow.setVisible(true);
+                caller.dispose(); 
+                this.dispose();
+            } catch(Exception ex){
+                javax.swing.JOptionPane.showMessageDialog(null, "Failed to get module ID: " + ex.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            }
+            
         } else{
             javax.swing.JOptionPane.showMessageDialog(null, "Please choose a module.");
         }

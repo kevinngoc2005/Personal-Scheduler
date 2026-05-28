@@ -13,6 +13,7 @@ import java.time.format.DateTimeFormatter;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.Color;
+import java.util.List;
 import javax.swing.BorderFactory;
 
 /**
@@ -24,8 +25,8 @@ public class moduleSettings extends javax.swing.JFrame {
     /**
      * Creates new form newModulePop
      */
-    private java.awt.Window caller;
     private String moduleName;
+    private int moduleID;
 
     public moduleSettings() {
         setUndecorated(true);
@@ -41,14 +42,15 @@ public class moduleSettings extends javax.swing.JFrame {
         });
     }
 
-    public moduleSettings(java.awt.Window caller, String modName) {
-        this.caller = caller;
-        moduleName = modName;
-        caller.setEnabled(false);
+    public moduleSettings(int modID) {
+        moduleID = modID;
         setUndecorated(true);
         initComponents();
         setupDateFields();
         setLocationRelativeTo(null);
+        populateSubModulesCB();
+        subModNameTF.setEnabled(false);
+        
         addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowOpened(java.awt.event.WindowEvent e) {
@@ -57,7 +59,8 @@ public class moduleSettings extends javax.swing.JFrame {
             }
         });
         try{
-            String[] timePeriod = DBMethods.getTimePeriodByName(moduleName);
+            moduleName = DBMethods.getModuleNameById(moduleID);
+            String[] timePeriod = DBMethods.getTimePeriodByName(moduleID);
             beforePeriodFTF.setText(timePeriod[0]);
             afterPeriodFTF.setText(timePeriod[1]);
             titleTF.setText(moduleName);
@@ -66,10 +69,15 @@ public class moduleSettings extends javax.swing.JFrame {
         }
     }
 
-    @Override
-    public void dispose() {
-        if (caller != null) caller.setEnabled(true);
-        super.dispose();
+    public void populateSubModulesCB(){
+        try {
+            List<String> subModules = DBMethods.getSubModuleLabels(moduleID);
+            for (String name : subModules) {
+                subModCB.addItem(name);
+            }
+        } catch (Exception ex) {
+            javax.swing.JOptionPane.showMessageDialog(null, "Failed to load sub-modules: " + ex.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void setupDateFields() {
@@ -89,12 +97,18 @@ public class moduleSettings extends javax.swing.JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 String title = titleTF.getText().trim();
+                String sTitle = subModNameTF.getText().trim(); 
+                String selected = (String) subModCB.getSelectedItem(); 
                 String startDate = beforePeriodFTF.getText().trim();
                 String endDate = afterPeriodFTF.getText().trim();
         
 
                 if (title.isEmpty()) {
                     javax.swing.JOptionPane.showMessageDialog(null, "Title cannot be empty.");
+                    return;
+                }
+                if (!(selected.isBlank()) && sTitle.isEmpty()) {
+                    javax.swing.JOptionPane.showMessageDialog(null, "Sub-Module label cannot be empty.");
                     return;
                 }
                 if (!isDateValid(beforePeriodFTF) || !isDateValid(afterPeriodFTF)) {
@@ -108,13 +122,24 @@ public class moduleSettings extends javax.swing.JFrame {
 
                 try {
                     DBMethods.updateModule(moduleName, title, startDate, endDate);
-                    javax.swing.JOptionPane.showMessageDialog(null, "Module \"" + title + "\" updated successfully!");                    
-                    viewModule secondWindow = new viewModule(moduleName); 
-                    secondWindow.setVisible(true); 
-                    dispose(); 
+                    javax.swing.JOptionPane.showMessageDialog(null, "Module \"" + title + "\" updated successfully!");                    ; 
                 } catch (Exception ex) {
                     javax.swing.JOptionPane.showMessageDialog(null, "Failed to update module: " + ex.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
                 }
+                
+                if(!(selected.isBlank())){
+                    try { 
+                        int subModuleID = DBMethods.getSubModuleIdByName(selected); 
+                        DBMethods.updateSubModule(subModuleID, sTitle);
+                        javax.swing.JOptionPane.showMessageDialog(null, "Sub-Module \"" + sTitle + "\" updated successfully!");                    
+                    } catch (Exception ex) {
+                        javax.swing.JOptionPane.showMessageDialog(null, "Failed to update Sub-Module: " + ex.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+                
+                viewModule secondWindow = new viewModule(moduleID); 
+                secondWindow.setVisible(true); 
+                dispose();
             }
         });
     }
@@ -256,7 +281,12 @@ public class moduleSettings extends javax.swing.JFrame {
 
         sTitleLabel.setText("Sub-Module:");
 
-        subModCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        subModCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " " }));
+        subModCB.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                subModCBActionPerformed(evt);
+            }
+        });
 
         subModNameLabel.setText("Label:");
 
@@ -283,8 +313,8 @@ public class moduleSettings extends javax.swing.JFrame {
                         .addGap(32, 32, 32)
                         .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(mainPanelLayout.createSequentialGroup()
-                                .addGap(36, 36, 36)
-                                .addComponent(titleLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(38, 38, 38)
+                                .addComponent(titleLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(titleTF, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
@@ -402,9 +432,9 @@ public class moduleSettings extends javax.swing.JFrame {
 
     private void returnButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_returnButtonMouseClicked
         // TODO add your handling code here:
-        viewModule secondWindow = new viewModule(moduleName); 
+        viewModule secondWindow = new viewModule(moduleID); 
         secondWindow.setVisible(true); 
-        super.dispose();
+        this.dispose();
     }//GEN-LAST:event_returnButtonMouseClicked
 
     private void createButtonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createButtonMouseEntered
@@ -435,7 +465,7 @@ public class moduleSettings extends javax.swing.JFrame {
 
     private void createButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_createButtonMouseClicked
         // TODO add your handling code here:
-        createSubModule secondWindow = new createSubModule(this);
+        createSubModule secondWindow = new createSubModule(this, moduleID);
         secondWindow.setVisible(true); 
     }//GEN-LAST:event_createButtonMouseClicked
 
@@ -446,6 +476,18 @@ public class moduleSettings extends javax.swing.JFrame {
         
         // update my disposing and setting it visible again
     }//GEN-LAST:event_updateButtonMouseClicked
+
+    private void subModCBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_subModCBActionPerformed
+        // TODO add your handling code here:     
+        String selected = (String) subModCB.getSelectedItem(); 
+        if(selected != null && !selected.isBlank()){
+            subModNameTF.setEnabled(true);
+            subModNameTF.setText(selected);
+        } else{
+            subModNameTF.setText("");
+            subModNameTF.setEnabled(false);
+        }
+    }//GEN-LAST:event_subModCBActionPerformed
 
     /**
      * @param args the command line arguments

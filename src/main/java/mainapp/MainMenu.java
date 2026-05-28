@@ -235,7 +235,7 @@ public class MainMenu extends javax.swing.JFrame {
         // TODO add your handling code here:
         playButton.setBackground(new Color(153,153,153));
         playButton.setForeground(Color.black); 
-        playButton.setBorder(BorderFactory.createLineBorder(Color.black));
+        playButton.setBorder(BorderFactory.createLineBorder(Color.black, 2));
     }//GEN-LAST:event_playButtonMouseExited
 
     private void exitButtonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_exitButtonMouseEntered
@@ -249,7 +249,7 @@ public class MainMenu extends javax.swing.JFrame {
         // TODO add your handling code here:
         exitButton.setBackground(new Color(153,153,153));
         exitButton.setForeground(Color.black); 
-        exitButton.setBorder(BorderFactory.createLineBorder(Color.black));
+        exitButton.setBorder(BorderFactory.createLineBorder(Color.black,2));
     }//GEN-LAST:event_exitButtonMouseExited
 
     private void exitButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_exitButtonMouseClicked
@@ -277,7 +277,7 @@ public class MainMenu extends javax.swing.JFrame {
         // TODO add your handling code here:
         settingButton.setBackground(new Color(153,153,153));
         settingButton.setForeground(Color.black); 
-        settingButton.setBorder(BorderFactory.createLineBorder(Color.black));
+        settingButton.setBorder(BorderFactory.createLineBorder(Color.black,2));
     }//GEN-LAST:event_settingButtonMouseExited
 
     private void showStatsDialog() {

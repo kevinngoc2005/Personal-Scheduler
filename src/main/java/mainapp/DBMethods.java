@@ -111,9 +111,9 @@ public class DBMethods {
 
     // Deletes a module by id. Because foreign keys + ON DELETE CASCADE are enabled,
     // this also automatically deletes all its sub-modules, tasks, and subtasks.
-    public static void deleteModule(String modName) throws SQLException {
-        try (PreparedStatement ps = getConnection().prepareStatement("DELETE FROM MODULES WHERE name = ?")) {
-            ps.setString(1, modName);
+    public static void deleteModule(int moduleID) throws SQLException {
+        try (PreparedStatement ps = getConnection().prepareStatement("DELETE FROM MODULES WHERE id = ?")) {
+            ps.setInt(1, moduleID);
             ps.executeUpdate();
         }
     }
@@ -140,10 +140,10 @@ public class DBMethods {
     }
 
     // Gets the start [0] and end [1] date for modules
-    public static String[] getTimePeriodByName(String name) throws SQLException {
-        String sql = "SELECT start_date, end_date FROM MODULES WHERE name = ? LIMIT 1";
+    public static String[] getTimePeriodByName(int modID) throws SQLException {
+        String sql = "SELECT start_date, end_date FROM MODULES WHERE id = ? LIMIT 1";
         try (PreparedStatement ps = getConnection().prepareStatement(sql)) {
-            ps.setString(1, name);
+            ps.setInt(1, modID);
             ResultSet rs = ps.executeQuery();
             return rs.next() ? new String[]{rs.getString("start_date"), rs.getString("end_date")} : null;
         }
@@ -192,6 +192,26 @@ public class DBMethods {
     public static void deleteSubModule(int subModuleId) throws SQLException {
         try (PreparedStatement ps = getConnection().prepareStatement("DELETE FROM SUB_MODULES WHERE id = ?")) {
             ps.setInt(1, subModuleId);
+            ps.executeUpdate();
+        }
+    }
+    
+    // Retrieves the Sub-Module's ID from its name
+    public static int getSubModuleIdByName(String name) throws SQLException {
+        String sql = "SELECT id FROM SUB_MODULES WHERE label = ? LIMIT 1";
+        try (PreparedStatement ps = getConnection().prepareStatement(sql)) {
+            ps.setString(1, name);
+            ResultSet rs = ps.executeQuery();
+            return rs.next() ? rs.getInt("id") : -1;
+        }
+    }
+    
+    // Updates the label of the sub-module via its ID
+    public static void updateSubModule(int sModID, String name) throws SQLException {
+        String sql = "UPDATE SUB_MODULES SET label = ? WHERE id = ?";
+        try (PreparedStatement ps = getConnection().prepareStatement(sql)) {
+            ps.setString(1, name);
+            ps.setInt(2, sModID);
             ps.executeUpdate();
         }
     }

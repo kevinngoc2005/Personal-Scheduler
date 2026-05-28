@@ -25,6 +25,7 @@ public class createSubModule extends javax.swing.JFrame {
      * Creates new form newModulePop
      */
     private java.awt.Window caller;
+    private int moduleID; 
 
     public createSubModule() {
         setUndecorated(true);
@@ -39,8 +40,9 @@ public class createSubModule extends javax.swing.JFrame {
         });
     }
 
-    public createSubModule(java.awt.Window caller) {
+    public createSubModule(java.awt.Window caller, int modID) {
         this.caller = caller;
+        moduleID = modID; 
         caller.setEnabled(false);
         setUndecorated(true);
         initComponents();
@@ -215,10 +217,20 @@ public class createSubModule extends javax.swing.JFrame {
             return;
         }
         
+        try{
+            DBMethods.addSubModule(moduleID, title); 
+            javax.swing.JOptionPane.showMessageDialog(null, "Sub-module \"" + title + "\" created successfully!");
+        } catch(Exception ex){
+            javax.swing.JOptionPane.showMessageDialog(null, "Failed to create sub-module: " + ex.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+        
         // Dispose both parent and child windows, then reopen parents window (to update it) 
         this.dispose(); 
         caller.dispose(); 
-        caller.setVisible(true); 
+        
+        moduleSettings secondWindow = new moduleSettings(moduleID);
+        secondWindow.setVisible(true); 
+        this.dispose();
         
     }//GEN-LAST:event_createButtonMouseClicked
 

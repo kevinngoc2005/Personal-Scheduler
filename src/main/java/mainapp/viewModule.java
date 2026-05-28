@@ -19,7 +19,7 @@ public class viewModule extends javax.swing.JFrame {
      */
     
     private String moduleName;
-    private int moduleID;
+    private int moduleID; 
     
     public viewModule() {
         setUndecorated(true);
@@ -34,8 +34,8 @@ public class viewModule extends javax.swing.JFrame {
         });
     }
     
-    public viewModule(String modName) {
-        moduleName = modName; 
+    public viewModule(int modID) {
+        moduleID = modID; 
            
         setUndecorated(true);
         initComponents();
@@ -49,9 +49,9 @@ public class viewModule extends javax.swing.JFrame {
         });
         
         try{
-            moduleID = DBMethods.getModuleIdByName(modName);
+            moduleName = DBMethods.getModuleNameById(moduleID);
         } catch (Exception ex) {
-            javax.swing.JOptionPane.showMessageDialog(null, "Failed to get module ID: " + ex.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            javax.swing.JOptionPane.showMessageDialog(null, "Failed to get module name: " + ex.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
         }
         
         changeModButton.setText(moduleName); 
@@ -268,7 +268,7 @@ public class viewModule extends javax.swing.JFrame {
 
     private void settingsButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_settingsButtonMouseClicked
         // TODO add your handling code here:
-        moduleSettings secondWindow = new moduleSettings(this, moduleName); 
+        moduleSettings secondWindow = new moduleSettings(moduleID); 
         secondWindow.setVisible(true); 
         this.dispose(); 
     }//GEN-LAST:event_settingsButtonMouseClicked

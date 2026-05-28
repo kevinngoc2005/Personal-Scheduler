@@ -159,7 +159,7 @@ public class OptionsMenu extends javax.swing.JFrame {
         viewModulesButton.setFont(new java.awt.Font("SansSerif", 0, 11)); // NOI18N
         viewModulesButton.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         viewModulesButton.setText("VIEW MODULES");
-        viewModulesButton.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        viewModulesButton.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0), 2));
         viewModulesButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 viewModulesButtonMouseClicked(evt);
@@ -238,7 +238,7 @@ public class OptionsMenu extends javax.swing.JFrame {
         // TODO add your handling code here:
         createModelButton.setBackground(new Color(153,153,153));
         createModelButton.setForeground(Color.black); 
-        createModelButton.setBorder(BorderFactory.createLineBorder(Color.black));
+        createModelButton.setBorder(BorderFactory.createLineBorder(Color.black,2));
     }//GEN-LAST:event_createModelButtonMouseExited
 
     private void returnButtonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_returnButtonMouseEntered
@@ -252,7 +252,7 @@ public class OptionsMenu extends javax.swing.JFrame {
         // TODO add your handling code here:
         returnButton.setBackground(new Color(153,153,153));
         returnButton.setForeground(Color.black); 
-        returnButton.setBorder(BorderFactory.createLineBorder(Color.black));
+        returnButton.setBorder(BorderFactory.createLineBorder(Color.black,2));
     }//GEN-LAST:event_returnButtonMouseExited
 
     private void returnButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_returnButtonMouseClicked
@@ -279,7 +279,7 @@ public class OptionsMenu extends javax.swing.JFrame {
         // TODO add your handling code here:
         viewModulesButton.setBackground(new Color(153,153,153));
         viewModulesButton.setForeground(Color.black); 
-        viewModulesButton.setBorder(BorderFactory.createLineBorder(Color.black));
+        viewModulesButton.setBorder(BorderFactory.createLineBorder(Color.black,2));
     }//GEN-LAST:event_viewModulesButtonMouseExited
 
     private void viewModulesButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_viewModulesButtonMouseClicked
