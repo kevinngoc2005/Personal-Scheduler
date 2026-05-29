@@ -1,4 +1,4 @@
-# Schedule
+# Scheduler
 
 > A goal-oriented scheduling app that tracks not just when you work, but whether you're actually making progress.
 
