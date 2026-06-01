@@ -41,13 +41,14 @@ This isn't just a calendar. It's built around *a goal hierarchy*: you break a go
 
 ## Architecture
 
-The app is built in three parts:
+The app is built in four parts:
 
 ![Pipeline architecture: app tables → stats script → stats tables → insights screen](images/architecture.png)
 
-1. **Capture (the app)** — the Swing interface reads and writes your goals, tasks, and completions to a database.
-2. **Pipeline (the stats job)** — a separate script reads that live data on a schedule, computes summaries (completions per week, streaks, goal progress), and stores them in their own tables.
-3. **Dashboard (the insights view)** — reads those summaries and shows how you're doing over time.
+1. **App tables** — live, transactional data, written by the Swing UI as you create modules and complete tasks.
+2. **Stats script** *(planned)* — reads the app tables on a timer, computes summaries (completions, streaks, goal progress).
+3. **Stats tables** *(planned)* — store those summaries as frozen, point-in-time snapshots.
+4. **Insights screen** *(planned)* — reads the stats tables and renders charts.
 
 The architectural shape is classic ETL in miniature: a transactional source (live app tables), a scheduled job that snapshots and aggregates (the stats script), and a read-only consumer (the insights dashboard).
 
