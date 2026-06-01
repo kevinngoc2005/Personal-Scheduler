@@ -14,6 +14,7 @@ It's a planning doc, so it's rough on purpose. The goal isn't a polished spec; i
 
 Spotted something I could do better? I'd genuinely love to hear it — open an issue, or reach me at the email below.
 
+
 ## Why it exists
 
 Most calendar apps are great at telling you when things happen, but not whether you're making progress on what actually matters. This project aims to:
@@ -24,6 +25,7 @@ Most calendar apps are great at telling you when things happen, but not whether 
 
 This isn't just a calendar. It's built around *a goal hierarchy*: you break a goal into sub-goals, tasks, and sub-tasks, mark what you finish, and the app turns that activity into *self-analytics* — completion rates, streaks, and progress toward each goal's deadline. The scheduling is the input; the self-analytics is the payoff. That insights layer is the thing a standard calendar app doesn't give you.
 
+
 ## Features
 
 - Monthly, weekly, and daily calendar views
@@ -32,12 +34,14 @@ This isn't just a calendar. It's built around *a goal hierarchy*: you break a go
 - Insights dashboard: completion trends, streaks, goal progress *(planned)*
 - Local data storage with export *(planned)*
 
+
 ## Tech stack
 
 - Java (Swing), built in NetBeans
 - SQLite, with a planned upgrade path to PostgreSQL
 - JDBC for database connectivity
 - Python *(planned, for the stats pipeline)*
+
 
 ## Architecture
 
@@ -52,6 +56,7 @@ The app is built in four parts:
 
 The architectural shape is classic ETL in miniature: a transactional source (live app tables), a scheduled job that snapshots and aggregates (the stats script), and a read-only consumer (the insights dashboard).
 
+
 ## Phase status
 
 - **Phase 0 — done.** Working prototype: core create / edit / delete loop, one view.
@@ -59,13 +64,16 @@ The architectural shape is classic ETL in miniature: a transactional source (liv
 - **Phase 2 — up next.** Stats pipeline + insights screen. *This is the data-engineering core of the project.*
 - **Phase 3 — partially shipped.** Polish, plus optional PostgreSQL, scheduling, and data export. *Already in: monthly / weekly / daily calendar views, full CRUD across the hierarchy with cascade deletes. Still planned: data export, optional PostgreSQL upgrade.*
 
+
 ## Why I'm building this
 
 I'm using this project to sharpen three things I want to be strong at coming out of my junior year: Java, relational databases, and the data-engineering thinking that turns raw events into something actually useful. The personal hook is that I'd rather build my own scheduler than wedge my life into a calendar app that can't tell me whether I'm actually making progress on what matters. "Done," for me, looks like an analytics layer that surfaces my real completion patterns, and a codebase I'm confident defending end-to-end — including the pieces I prototyped with AI assistance.
 
+
 ## Design and data model
 
 Detailed wireframes, screen flows, and the underlying entity design live in [DESIGN.pdf](DESIGN.pdf).
+
 
 ## Contact
 
