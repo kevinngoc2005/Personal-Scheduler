@@ -193,6 +193,7 @@ public class moduleSettings extends javax.swing.JFrame {
         subModCB = new javax.swing.JComboBox<>();
         subModNameLabel = new javax.swing.JLabel();
         subModNameTF = new javax.swing.JTextField();
+        deleteSubModButton = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -296,11 +297,27 @@ public class moduleSettings extends javax.swing.JFrame {
             }
         });
 
+        deleteSubModButton.setForeground(new java.awt.Color(128, 128, 128));
+        deleteSubModButton.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        deleteSubModButton.setText("x");
+        deleteSubModButton.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(128, 128, 128)));
+        deleteSubModButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                deleteSubModButtonMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                deleteSubModButtonMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                deleteSubModButtonMouseExited(evt);
+            }
+        });
+
         javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
         mainPanel.setLayout(mainPanelLayout);
         mainPanelLayout.setHorizontalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jSeparator1, javax.swing.GroupLayout.DEFAULT_SIZE, 358, Short.MAX_VALUE)
+            .addComponent(jSeparator1)
             .addComponent(jSeparator2)
             .addGroup(mainPanelLayout.createSequentialGroup()
                 .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -326,13 +343,6 @@ public class moduleSettings extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(afterPeriodFTF, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addGroup(mainPanelLayout.createSequentialGroup()
-                        .addGap(25, 25, 25)
-                        .addComponent(updateButton, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(15, 15, 15)
-                        .addComponent(createButton, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(15, 15, 15)
-                        .addComponent(returnButton, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(mainPanelLayout.createSequentialGroup()
                         .addGap(135, 135, 135)
                         .addComponent(moduleLabel))
                     .addGroup(mainPanelLayout.createSequentialGroup()
@@ -342,8 +352,17 @@ public class moduleSettings extends javax.swing.JFrame {
                         .addGap(55, 55, 55)
                         .addComponent(sTitleLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(subModCB, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
+                        .addComponent(subModCB, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(deleteSubModButton, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(mainPanelLayout.createSequentialGroup()
+                        .addGap(25, 25, 25)
+                        .addComponent(updateButton, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(15, 15, 15)
+                        .addComponent(createButton, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(15, 15, 15)
+                        .addComponent(returnButton, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(25, 25, 25))
         );
         mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -367,8 +386,9 @@ public class moduleSettings extends javax.swing.JFrame {
                 .addGap(10, 10, 10)
                 .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(sTitleLabel)
-                    .addComponent(subModCB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(15, 15, 15)
+                    .addComponent(subModCB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(deleteSubModButton, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(17, 17, 17)
                 .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(subModNameLabel)
                     .addComponent(subModNameTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -489,6 +509,54 @@ public class moduleSettings extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_subModCBActionPerformed
 
+    private void deleteSubModButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_deleteSubModButtonMouseClicked
+        // TODO add your handling code here:
+        String selected = (String) subModCB.getSelectedItem();
+        
+        if(selected != null && !selected.isBlank()){
+            try{
+                int subID = DBMethods.getSubModuleIdByName(selected);
+                DBMethods.deleteSubModule(subID);
+                javax.swing.JOptionPane.showMessageDialog(null, "Sub-Module \"" + selected + "\" deleted successfully!");  
+            } catch(Exception ex){
+                javax.swing.JOptionPane.showMessageDialog(null, "Failed to delete module: " + ex.getMessage(), "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            }
+        } else{
+            subModNameTF.setEnabled(false);
+        } 
+        
+    }//GEN-LAST:event_deleteSubModButtonMouseClicked
+
+    private void deleteSubModButtonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_deleteSubModButtonMouseEntered
+        // TODO add your handling code here:
+        String selected = (String) subModCB.getSelectedItem();
+        
+        if(selected != null && !selected.isBlank()){
+            deleteSubModButton.setBackground(Color.white);
+            deleteSubModButton.setForeground(Color.white); 
+            deleteSubModButton.setBorder(BorderFactory.createLineBorder(Color.WHITE));
+        } else{
+            deleteSubModButton.setBackground(new Color(128,128,128));
+            deleteSubModButton.setForeground(new Color(128,128,128)); 
+            deleteSubModButton.setBorder(BorderFactory.createLineBorder(new Color(128,128,128))); 
+        }
+    }//GEN-LAST:event_deleteSubModButtonMouseEntered
+
+    private void deleteSubModButtonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_deleteSubModButtonMouseExited
+        // TODO add your handling code here:
+        String selected = (String) subModCB.getSelectedItem();
+        
+        if(selected != null && !selected.isBlank()){  
+            deleteSubModButton.setBackground(new Color(153,153,153));
+            deleteSubModButton.setForeground(Color.black); 
+            deleteSubModButton.setBorder(BorderFactory.createLineBorder(Color.black));
+        } else{
+            deleteSubModButton.setBackground(new Color(128,128,128));
+            deleteSubModButton.setForeground(new Color(128,128,128)); 
+            deleteSubModButton.setBorder(BorderFactory.createLineBorder(new Color(128,128,128))); 
+        }
+    }//GEN-LAST:event_deleteSubModButtonMouseExited
+
     /**
      * @param args the command line arguments
      */
@@ -530,6 +598,7 @@ public class moduleSettings extends javax.swing.JFrame {
     private javax.swing.JFormattedTextField beforePeriodFTF;
     private javax.swing.JLabel createButton;
     private javax.swing.JLabel dashLabel;
+    private javax.swing.JLabel deleteSubModButton;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JPanel mainPanel;
