@@ -16,14 +16,20 @@ public class monthlyViewPanel extends JPanel {
     private JLabel monthLabel;
     private JPanel gridPanel;
     private java.awt.Window owner;
+    private Runnable onNavigate;
 
     private static final DateTimeFormatter FMT   = DateTimeFormatter.ofPattern("MM/dd/yyyy");
     private static final DateTimeFormatter TITLE = DateTimeFormatter.ofPattern("MMMM yyyy");
     private static final String[] DAY_NAMES = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
 
     public monthlyViewPanel(java.awt.Window owner, int moduleId) {
+        this(owner, moduleId, null);
+    }
+
+    public monthlyViewPanel(java.awt.Window owner, int moduleId, Runnable onNavigate) {
         this.owner = owner;
         this.moduleId = moduleId;
+        this.onNavigate = onNavigate;
         this.currentMonth = YearMonth.now();
         setLayout(new BorderLayout());
         buildChrome();
@@ -79,18 +85,19 @@ public class monthlyViewPanel extends JPanel {
             @Override public void mouseClicked(MouseEvent e) {
                 currentMonth = currentMonth.minusMonths(1);
                 loadMonth();
+                if (onNavigate != null) onNavigate.run();
             }
         });
 
         monthLabel = new JLabel("", SwingConstants.CENTER);
         monthLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
-        monthLabel.setPreferredSize(new Dimension(180, 24));
 
         JLabel next = makeNavBtn("Next >");
         next.addMouseListener(new MouseAdapter() {
             @Override public void mouseClicked(MouseEvent e) {
                 currentMonth = currentMonth.plusMonths(1);
                 loadMonth();
+                if (onNavigate != null) onNavigate.run();
             }
         });
 
@@ -199,15 +206,22 @@ public class monthlyViewPanel extends JPanel {
 
     private JLabel makeNavBtn(String text) {
         JLabel lbl = new JLabel(text);
-        lbl.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        lbl.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        lbl.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(Color.BLACK),
+            BorderFactory.createEmptyBorder(3, 8, 3, 8)));
         lbl.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         lbl.addMouseListener(new MouseAdapter() {
             @Override public void mouseEntered(MouseEvent e) {
-                lbl.setBorder(BorderFactory.createLineBorder(Color.WHITE));
+                lbl.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(Color.WHITE),
+                    BorderFactory.createEmptyBorder(3, 8, 3, 8)));
                 lbl.setForeground(Color.WHITE);
             }
             @Override public void mouseExited(MouseEvent e) {
-                lbl.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+                lbl.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(Color.BLACK),
+                    BorderFactory.createEmptyBorder(3, 8, 3, 8)));
                 lbl.setForeground(Color.BLACK);
             }
         });

@@ -6,9 +6,10 @@
 package mainapp;
 
 import java.awt.Color;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.awt.Image;
+import java.util.Random;
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 
 /**
  *
@@ -20,15 +21,51 @@ public class viewModule extends javax.swing.JFrame {
      * Creates new form viewModule
      */
     
+    private static class GifEntry {
+        final String path;
+        final int height;
+        GifEntry(String path, int height) { this.path = path; this.height = height; }
+    }
+
+    private static final GifEntry[] GIFS = {
+        new GifEntry("/gifs/chibi-tachyon.gif", 55),
+        new GifEntry("/gifs/miku-miku-dance.gif", 55)
+    };
+
+    private static final Random RNG = new Random();
+    private int currentGifIndex = 0;
+
     private String moduleName;
     private int moduleID;
     private monthlyViewPanel monthly;
     private weeklyViewPanel  weekly;
     private dailyViewPanels  daily;
     
+    // Picks a random GIF that isn't the current one and displays it.
+    public void showRandomGif() {
+        if (GIFS.length <= 1) return;
+        int next;
+        do { next = RNG.nextInt(GIFS.length); } while (next == currentGifIndex);
+        currentGifIndex = next;
+        GifEntry entry = GIFS[currentGifIndex];
+        ImageIcon gif = new ImageIcon(getClass().getResource(entry.path));
+        Image scaled = gif.getImage().getScaledInstance(-1, entry.height, Image.SCALE_DEFAULT);
+        typeTitleLabel.setIcon(new ImageIcon(scaled));
+    }
+
+    private void loadInitialGif() {
+        currentGifIndex = RNG.nextInt(GIFS.length);
+        GifEntry entry = GIFS[currentGifIndex];
+        ImageIcon gif = new ImageIcon(getClass().getResource(entry.path));
+        Image scaled = gif.getImage().getScaledInstance(-1, entry.height, Image.SCALE_DEFAULT);
+        typeTitleLabel.setIcon(new ImageIcon(scaled));
+        typeTitleLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+    }
+
     public viewModule() {
         setUndecorated(true);
         initComponents();
+        loadInitialGif();
         setLocationRelativeTo(null);
         addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
@@ -38,12 +75,13 @@ public class viewModule extends javax.swing.JFrame {
             }
         });
     }
-    
+
     public viewModule(int modID) {
-        moduleID = modID; 
-           
+        moduleID = modID;
+
         setUndecorated(true);
         initComponents();
+        loadInitialGif();
         setLocationRelativeTo(null);
         addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
@@ -62,9 +100,9 @@ public class viewModule extends javax.swing.JFrame {
         changeModButton.setText(moduleName);
 
         // Add view panels to the CardLayout viewPanel
-        monthly = new monthlyViewPanel(viewModule.this, moduleID);
-        weekly  = new weeklyViewPanel(viewModule.this, moduleID);
-        daily   = new dailyViewPanels(viewModule.this, moduleID);
+        monthly = new monthlyViewPanel(viewModule.this, moduleID, this::showRandomGif);
+        weekly  = new weeklyViewPanel(viewModule.this, moduleID, this::showRandomGif);
+        daily   = new dailyViewPanels(viewModule.this, moduleID, this::showRandomGif);
         viewPanel.add(monthly, "Monthly");
         viewPanel.add(weekly,  "Weekly");
         viewPanel.add(daily,   "Daily");
@@ -83,27 +121,7 @@ public class viewModule extends javax.swing.JFrame {
         // Show monthly by default
         ((java.awt.CardLayout) viewPanel.getLayout()).show(viewPanel, "Monthly");
 
-        // Repurpose the unused timeLabel as a "Today" button that opens dayModel
-        timeLabel.setText("Today");
-        timeLabel.setBorder(BorderFactory.createLineBorder(Color.black));
-        timeLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        timeLabel.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                String today = LocalDate.now().format(DateTimeFormatter.ofPattern("MM/dd/yyyy"));
-                dayModel dm = new dayModel(viewModule.this, moduleID, today, () -> reloadCurrentView());
-                dm.setVisible(true);
-            }
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                timeLabel.setBackground(Color.white);
-                timeLabel.setForeground(Color.white);
-                timeLabel.setBorder(BorderFactory.createLineBorder(Color.WHITE));
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                timeLabel.setBackground(new Color(153, 153, 153));
-                timeLabel.setForeground(Color.black);
-                timeLabel.setBorder(BorderFactory.createLineBorder(Color.black));
-            }
-        });
+
     }
 
     /**
@@ -127,7 +145,6 @@ public class viewModule extends javax.swing.JFrame {
         typeLabel = new javax.swing.JLabel();
         typeCB = new javax.swing.JComboBox<>();
         typeTitleLabel = new javax.swing.JLabel();
-        timeLabel = new javax.swing.JLabel();
         mmButton = new javax.swing.JLabel();
         changeModButton = new javax.swing.JLabel();
         settingsButton = new javax.swing.JLabel();
@@ -147,10 +164,6 @@ public class viewModule extends javax.swing.JFrame {
         typeCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Monthly", "Weekly", "Daily" }));
 
         typeTitleLabel.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        typeTitleLabel.setText("Type Label");
-
-        timeLabel.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        timeLabel.setText("Time");
 
         mmButton.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         mmButton.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -204,10 +217,6 @@ public class viewModule extends javax.swing.JFrame {
         optionsPanelLayout.setHorizontalGroup(
             optionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(optionsPanelLayout.createSequentialGroup()
-                .addGap(48, 48, 48)
-                .addComponent(viewPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 636, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(50, Short.MAX_VALUE))
-            .addGroup(optionsPanelLayout.createSequentialGroup()
                 .addGap(115, 115, 115)
                 .addComponent(mmButton, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -216,15 +225,18 @@ public class viewModule extends javax.swing.JFrame {
                 .addComponent(changeModButton, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(115, 115, 115))
             .addGroup(optionsPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(typeLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(typeCB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(154, 154, 154)
-                .addComponent(typeTitleLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(timeLabel)
-                .addGap(144, 144, 144))
+                .addGroup(optionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(optionsPanelLayout.createSequentialGroup()
+                        .addGap(48, 48, 48)
+                        .addComponent(viewPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 636, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(optionsPanelLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(typeLabel)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(typeCB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(160, 160, 160)
+                        .addComponent(typeTitleLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(50, Short.MAX_VALUE))
         );
         optionsPanelLayout.setVerticalGroup(
             optionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -235,13 +247,9 @@ public class viewModule extends javax.swing.JFrame {
                         .addGroup(optionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(typeLabel)
                             .addComponent(typeCB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(optionsPanelLayout.createSequentialGroup()
-                        .addGap(20, 20, 20)
-                        .addGroup(optionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(typeTitleLabel)
-                            .addComponent(timeLabel))))
-                .addGap(20, 20, 20)
-                .addComponent(viewPanel, 200, 460, Short.MAX_VALUE)
+                    .addComponent(typeTitleLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(viewPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 369, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addGroup(optionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(settingsButton, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -317,7 +325,7 @@ public class viewModule extends javax.swing.JFrame {
 
     private void changeModButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_changeModButtonMouseClicked
         // TODO add your handling code here:
-        selectModule secondWindow = new selectModule(this); 
+        selectModule secondWindow = new selectModule(this, moduleID); 
         secondWindow.setVisible(true); 
     }//GEN-LAST:event_changeModButtonMouseClicked
 
@@ -368,7 +376,6 @@ public class viewModule extends javax.swing.JFrame {
     private javax.swing.JLabel mmButton;
     private javax.swing.JPanel optionsPanel;
     private javax.swing.JLabel settingsButton;
-    private javax.swing.JLabel timeLabel;
     private javax.swing.JComboBox<String> typeCB;
     private javax.swing.JLabel typeLabel;
     private javax.swing.JLabel typeTitleLabel;

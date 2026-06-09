@@ -265,10 +265,11 @@ public class dayModel extends javax.swing.JFrame {
         JPanel topBar = new JPanel(new BorderLayout());
 
         // Prev / date label / Next — centered in the top bar
-        JPanel navPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
+        JPanel navPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 4));
 
-        JLabel prevButton = new JLabel("< Prev");
-        prevButton.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        final JLabel prevButton = new JLabel("< Prev");
+        prevButton.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        prevButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.BLACK), BorderFactory.createEmptyBorder(3, 8, 3, 8)));
         prevButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         prevButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -276,11 +277,11 @@ public class dayModel extends javax.swing.JFrame {
                 loadDay();
             }
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                prevButton.setBorder(BorderFactory.createLineBorder(Color.WHITE));
+                prevButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.WHITE), BorderFactory.createEmptyBorder(3, 8, 3, 8)));
                 prevButton.setForeground(Color.WHITE);
             }
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                prevButton.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+                prevButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.BLACK), BorderFactory.createEmptyBorder(3, 8, 3, 8)));
                 prevButton.setForeground(Color.BLACK);
             }
         });
@@ -288,8 +289,9 @@ public class dayModel extends javax.swing.JFrame {
         dateLabel = new JLabel(currentDate.format(FMT));
         dateLabel.setFont(new Font("SansSerif", Font.BOLD, 13));
 
-        JLabel nextButton = new JLabel("Next >");
-        nextButton.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        final JLabel nextButton = new JLabel("Next >");
+        nextButton.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        nextButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.BLACK), BorderFactory.createEmptyBorder(3, 8, 3, 8)));
         nextButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         nextButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -297,11 +299,11 @@ public class dayModel extends javax.swing.JFrame {
                 loadDay();
             }
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                nextButton.setBorder(BorderFactory.createLineBorder(Color.WHITE));
+                nextButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.WHITE), BorderFactory.createEmptyBorder(3, 8, 3, 8)));
                 nextButton.setForeground(Color.WHITE);
             }
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                nextButton.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+                nextButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.BLACK), BorderFactory.createEmptyBorder(3, 8, 3, 8)));
                 nextButton.setForeground(Color.BLACK);
             }
         });
@@ -310,8 +312,12 @@ public class dayModel extends javax.swing.JFrame {
         navPanel.add(dateLabel);
         navPanel.add(nextButton);
 
+        // GridBagLayout wrapper centers navPanel both horizontally and vertically
+        JPanel navWrapper = new JPanel(new GridBagLayout());
+        navWrapper.add(navPanel);
+
         // Add Task / Close on the right side
-        JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+        JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 4, 4));
 
         JLabel addTaskButton = new JLabel("+ Task");
         addTaskButton.setBorder(BorderFactory.createLineBorder(Color.BLACK));
@@ -354,13 +360,7 @@ public class dayModel extends javax.swing.JFrame {
         actionPanel.add(addTaskButton);
         actionPanel.add(closeButton);
 
-        // Mirror the action panel's width on the left so navPanel (CENTER) is truly centered.
-        JPanel navSpacer = new JPanel();
-        navSpacer.setOpaque(false);
-        navSpacer.setPreferredSize(new java.awt.Dimension(actionPanel.getPreferredSize().width, 1));
-
-        topBar.add(navSpacer, BorderLayout.WEST);
-        topBar.add(navPanel, BorderLayout.CENTER);
+        topBar.add(navWrapper, BorderLayout.CENTER);
         topBar.add(actionPanel, BorderLayout.EAST);
 
         // ── Scrollable content ───────────────────────────────────────────────

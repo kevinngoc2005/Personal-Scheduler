@@ -25,6 +25,7 @@ public class selectModule extends javax.swing.JFrame {
      * Creates new form newModulePop
      */
     private java.awt.Window caller;
+    private int module_ID; 
 
     public selectModule() {
         setUndecorated(true);
@@ -42,6 +43,23 @@ public class selectModule extends javax.swing.JFrame {
 
     public selectModule(java.awt.Window caller) {
         this.caller = caller;
+        caller.setEnabled(false);
+        setUndecorated(true);
+        initComponents();
+        setLocationRelativeTo(null);
+        populateModulesCB();
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowOpened(java.awt.event.WindowEvent e) {
+                toFront();
+                requestFocus();
+            }
+        });
+    }
+    
+    public selectModule(java.awt.Window caller, int modID) {
+        this.caller = caller;
+        module_ID = modID; 
         caller.setEnabled(false);
         setUndecorated(true);
         initComponents();
@@ -243,6 +261,10 @@ public class selectModule extends javax.swing.JFrame {
         if(selected != null && !selected.isBlank()){
             try{
                 int moduleID = DBMethods.getModuleIdByName(selected);
+                if(module_ID == moduleID){
+                    javax.swing.JOptionPane.showMessageDialog(null, "Module \"" + selected + "\" is still open, please close it before deleting it.");
+                    return;
+                }
                 DBMethods.deleteModule(moduleID);
                 javax.swing.JOptionPane.showMessageDialog(null, "Module \"" + selected + "\" deleted successfully!");  
             } catch(Exception ex) {

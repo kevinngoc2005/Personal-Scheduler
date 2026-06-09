@@ -15,6 +15,7 @@ public class weeklyViewPanel extends JPanel {
     private JLabel weekLabel;
     private JPanel daysPanel;
     private java.awt.Window owner;
+    private Runnable onNavigate;
 
     private static final DateTimeFormatter FMT      = DateTimeFormatter.ofPattern("MM/dd/yyyy");
     private static final DateTimeFormatter SHORT_FMT = DateTimeFormatter.ofPattern("M/d");
@@ -22,9 +23,13 @@ public class weeklyViewPanel extends JPanel {
     private static final String[] DAY_ABBR = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
 
     public weeklyViewPanel(java.awt.Window owner, int moduleId) {
+        this(owner, moduleId, null);
+    }
+
+    public weeklyViewPanel(java.awt.Window owner, int moduleId, Runnable onNavigate) {
         this.owner = owner;
         this.moduleId = moduleId;
-        // Start on the Sunday of the current week
+        this.onNavigate = onNavigate;
         this.weekStart = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
         setLayout(new BorderLayout());
         buildChrome();
@@ -164,18 +169,19 @@ public class weeklyViewPanel extends JPanel {
             @Override public void mouseClicked(MouseEvent e) {
                 weekStart = weekStart.minusWeeks(1);
                 loadWeek();
+                if (onNavigate != null) onNavigate.run();
             }
         });
 
         weekLabel = new JLabel("", SwingConstants.CENTER);
         weekLabel.setFont(new Font("SansSerif", Font.BOLD, 13));
-        weekLabel.setPreferredSize(new Dimension(200, 24));
 
         JLabel next = makeNavBtn("Next >");
         next.addMouseListener(new MouseAdapter() {
             @Override public void mouseClicked(MouseEvent e) {
                 weekStart = weekStart.plusWeeks(1);
                 loadWeek();
+                if (onNavigate != null) onNavigate.run();
             }
         });
 
@@ -198,15 +204,22 @@ public class weeklyViewPanel extends JPanel {
 
     private JLabel makeNavBtn(String text) {
         JLabel lbl = new JLabel(text);
-        lbl.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        lbl.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        lbl.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(Color.BLACK),
+            BorderFactory.createEmptyBorder(3, 8, 3, 8)));
         lbl.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         lbl.addMouseListener(new MouseAdapter() {
             @Override public void mouseEntered(MouseEvent e) {
-                lbl.setBorder(BorderFactory.createLineBorder(Color.WHITE));
+                lbl.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(Color.WHITE),
+                    BorderFactory.createEmptyBorder(3, 8, 3, 8)));
                 lbl.setForeground(Color.WHITE);
             }
             @Override public void mouseExited(MouseEvent e) {
-                lbl.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+                lbl.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(Color.BLACK),
+                    BorderFactory.createEmptyBorder(3, 8, 3, 8)));
                 lbl.setForeground(Color.BLACK);
             }
         });

@@ -14,12 +14,18 @@ public class dailyViewPanels extends JPanel {
     private JPanel contentPanel;
     private JLabel dateLabel;
     private java.awt.Window owner;
+    private Runnable onNavigate;
 
     private static final DateTimeFormatter FMT = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
     public dailyViewPanels(java.awt.Window owner, int moduleId) {
+        this(owner, moduleId, null);
+    }
+
+    public dailyViewPanels(java.awt.Window owner, int moduleId, Runnable onNavigate) {
         this.owner = owner;
         this.moduleId = moduleId;
+        this.onNavigate = onNavigate;
         this.currentDate = LocalDate.now();
         setLayout(new BorderLayout());
         buildChrome();
@@ -233,22 +239,24 @@ public class dailyViewPanels extends JPanel {
         // ── Top bar ──────────────────────────────────────────────────────────
         JPanel topBar = new JPanel(new BorderLayout());
 
-        JPanel navPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
+        JPanel navPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 12, 4));
 
-        JLabel prevButton = new JLabel("< Prev");
-        prevButton.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        final JLabel prevButton = new JLabel("< Prev");
+        prevButton.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        prevButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.BLACK), BorderFactory.createEmptyBorder(3, 8, 3, 8)));
         prevButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         prevButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 currentDate = currentDate.minusDays(1);
                 loadDay();
+                if (onNavigate != null) onNavigate.run();
             }
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                prevButton.setBorder(BorderFactory.createLineBorder(Color.WHITE));
+                prevButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.WHITE), BorderFactory.createEmptyBorder(3, 8, 3, 8)));
                 prevButton.setForeground(Color.WHITE);
             }
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                prevButton.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+                prevButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.BLACK), BorderFactory.createEmptyBorder(3, 8, 3, 8)));
                 prevButton.setForeground(Color.BLACK);
             }
         });
@@ -256,20 +264,22 @@ public class dailyViewPanels extends JPanel {
         dateLabel = new JLabel(currentDate.format(FMT));
         dateLabel.setFont(new Font("SansSerif", Font.BOLD, 13));
 
-        JLabel nextButton = new JLabel("Next >");
-        nextButton.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        final JLabel nextButton = new JLabel("Next >");
+        nextButton.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        nextButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.BLACK), BorderFactory.createEmptyBorder(3, 8, 3, 8)));
         nextButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         nextButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 currentDate = currentDate.plusDays(1);
                 loadDay();
+                if (onNavigate != null) onNavigate.run();
             }
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                nextButton.setBorder(BorderFactory.createLineBorder(Color.WHITE));
+                nextButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.WHITE), BorderFactory.createEmptyBorder(3, 8, 3, 8)));
                 nextButton.setForeground(Color.WHITE);
             }
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                nextButton.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+                nextButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.BLACK), BorderFactory.createEmptyBorder(3, 8, 3, 8)));
                 nextButton.setForeground(Color.BLACK);
             }
         });
@@ -278,7 +288,10 @@ public class dailyViewPanels extends JPanel {
         navPanel.add(dateLabel);
         navPanel.add(nextButton);
 
-        JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+        JPanel navWrapper = new JPanel(new GridBagLayout());
+        navWrapper.add(navPanel);
+
+        JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 4, 4));
 
         JLabel addTaskButton = new JLabel("+ Task");
         addTaskButton.setBorder(BorderFactory.createLineBorder(Color.BLACK));
@@ -303,10 +316,10 @@ public class dailyViewPanels extends JPanel {
 
         JPanel navSpacer = new JPanel();
         navSpacer.setOpaque(false);
-        navSpacer.setPreferredSize(new java.awt.Dimension(actionPanel.getPreferredSize().width, 1));
+        navSpacer.setPreferredSize(new Dimension(actionPanel.getPreferredSize().width, 1));
 
         topBar.add(navSpacer, BorderLayout.WEST);
-        topBar.add(navPanel, BorderLayout.CENTER);
+        topBar.add(navWrapper, BorderLayout.CENTER);
         topBar.add(actionPanel, BorderLayout.EAST);
 
         // ── Scrollable content ───────────────────────────────────────────────
